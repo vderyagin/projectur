@@ -39,7 +39,7 @@
   '(".hg" ".git" ".bzr" ".svn" "_darcs" "_MTN" "CVS" "RCS" "SCCS")
   "List of names of directories, content of which will not be considered part of the project.")
 
-(defvar cpr-ignored-files-wildcards
+(defvar cpr-ignored-files
   '("*.elc" "*.rbc" "*.py[co]" "*.a" "*.o" "*.so" "*.bin"
     "*.class" "*.s[ac]ssc" "*.sqlite3" "TAGS" ".gitkeep")
   "List of wildcards, matching names of files, which will not be considered part of the project.")
@@ -58,17 +58,17 @@
   "A list of plists describing project types.")
 
 (defun cpr--root ()
+  "Get root directory of current project."
   (plist-get cpr-project :root))
 
 (defun cpr--type ()
+  "Get type of current project."
   (plist-get cpr-project :type))
 
 (defun cpr--name ()
+  "Gent name of current project."
   (plist-get cpr-project :name))
 
-(defun cpr--set-property (property value)
-  (setq cpr-project
-        (plist-put cpr-project property value)))
 
 (defun* cpr--set-properties (&key root name type)
   (when root
@@ -81,16 +81,8 @@
     (setq cpr-project
           (plist-put cpr-project :type type))))
 
-(defun cpr-test-for-project (project)
-  ""
-  (let* ((project-type
-          (cpr--type))
-         (corresponding-spec
-          (cpr-spec-for-project-type project-type)))
-    (plist-get corresponding-spec :test)))
-
 (defun cpr-valid-p ()
-  ""
+  "Check whether current project is valid."
   (let ((root (cpr--root))
         (name (cpr--name))
         (type (cpr--type)))
@@ -98,22 +90,18 @@
      (stringp root)
      (stringp name)
      (stringp type)
-     (member type
-             (mapcar
-              (lambda (spec)
-                (plist-get spec :type))
-              cpr-types-specs))
-     (file-directory-p root)
-     (funcall (cpr-test-for-project cpr-project) root)
-     (equal name (cpr-name-from-directory root)))))
+     (not (equal root ""))
+     (not (equal name ""))
+     (not (equal type ""))
+     (file-directory-p root))))
 
 (defun cpr-name-from-directory (dir)
-  (unless (file-name-absolute-p dir)
-    (error "Argument should be absolute path"))
+  "Get project name from it's root directory path."
   (file-name-nondirectory
    (directory-file-name dir)))
 
 (defun cpr-reset-project ()
+  "Reset current project"
   (setq cpr-project nil))
 
 (defun cpr-fetch ()
@@ -163,7 +151,7 @@ nil otherwise"
        '(type "f"))))
 
 (defun cpr-files ()
-  "Get list of all files within current project"
+  "Get list of all files within current project."
   (split-string
    (shell-command-to-string (cpr-build-find-cmd))))
 
