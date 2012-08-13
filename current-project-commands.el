@@ -24,14 +24,14 @@
 (defun cpr-goto-root ()
   "Go to currrent project's root directory."
   (interactive)
-  (with-project
+  (with-cpr-project
       (find-file default-directory)))
 
 ;;;###autoload
 (defun cpr-rgrep ()
   "Run `rgrep' command in context of the current project root directory."
   (interactive)
-  (with-project
+  (with-cpr-project
       (call-interactively 'rgrep)))
 
 ;;;###autoload
@@ -41,7 +41,7 @@
   (unless  (require 'ack nil 'noerror)
     (error "You need `ack' command installed in order to use this functionality"))
   (when (fboundp 'ack)
-    (with-project
+    (with-cpr-project
         (call-interactively 'ack))))
 
 ;;;###autoload
@@ -51,21 +51,21 @@
   (unless (require 'smex nil 'noerror)
     (error "You need `smex' command (https://github.com/nonsequitur/smex/) installed in order to use this functionality"))
   (when (fboundp 'smex)
-    (with-project
+    (with-cpr-project
         (call-interactively 'smex))))
 
 ;;;###autoload
 (defun cpr-execute-shell-command ()
   "Execute shell command in context of the current project root directory."
   (interactive)
-  (with-project
+  (with-cpr-project
       (call-interactively 'shell-command)))
 
 ;;;###autoload
 (defun cpr-generate-tags ()
   "Use exuberant-ctags(1) to generate TAGS file for current project "
   (interactive)
-  (with-project
+  (with-cpr-project
       (setq tags-file-name (expand-file-name "TAGS"))
     (shell-command "exuberant-ctags -e -R .")))
 
@@ -73,7 +73,7 @@
 (defun cpr-version-control ()
   "Open appropriate version control interface for current project."
   (interactive)
-  (with-project
+  (with-cpr-project
       (let ((root default-directory))
         (cond
           ((and

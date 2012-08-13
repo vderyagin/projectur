@@ -156,7 +156,7 @@ nil otherwise"
 
 (defun cpr-build-find-cmd ()
   "Construct find(1) command that returns all files within current project."
-  (with-project
+  (with-cpr-project
       (find-cmd
        `(prune (name ,@cpr-ignored-dirs))
        `(not (iname ,@cpr-ignored-files-wildcards))
@@ -168,7 +168,8 @@ nil otherwise"
    (shell-command-to-string (cpr-build-find-cmd))))
 
 ;;;###autoload
-(defmacro with-project (&rest body)
+(defmacro with-cpr-project (&rest body)
+  "Execute BODY in context of current project."
   `(progn
      (unless (cpr-valid-p)
        (cpr-fetch))
