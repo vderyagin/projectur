@@ -50,7 +50,15 @@
 
 (defvar cpr-types-specs
   '((:type "Ruby on Ralis application"
-     :test cpr-rails-app-p)
+     :test cpr-rails-app-p
+     :ignored-dirs ("tmp"))
+    (:type "Ruby Gem"
+     :test cpr-ruby-gem-p
+     :ignored-dirs ("pkg"))
+    (:type "Bundler project"
+     :test cpr-bundler-project-p)
+    (:type "Rake project"
+     :test cpr-rake-project-p)
     (:type "Generic Git project"
      :test cpr-git-repo-p)
     (:type "Generic Mercurial project"
@@ -69,6 +77,18 @@
   "Gent name of current project."
   (plist-get cpr-project :name))
 
+(defun cpr-ignored-dirs ()
+  (append
+   (cpr-from-spec :ignored-dirs)
+   cpr-ignored-dirs))
+
+(defun cpr-ignored-files ()
+  (append
+   (cpr-from-spec :ignored-files)
+   cpr-ignored-files))
+
+(defun cpr-from-spec (param)
+  (plist-get (cpr-spec-for-project-type (cpr--type)) param))
 
 (defun* cpr--set-properties (&key root name type)
   (when root
@@ -146,8 +166,8 @@ nil otherwise"
   "Construct find(1) command that returns all files within current project."
   (with-cpr-project
       (find-cmd
-       `(prune (name ,@cpr-ignored-dirs))
-       `(not (iname ,@cpr-ignored-files-wildcards))
+       `(prune (name ,@(cpr-ignored-dirs)))
+       `(not (iname ,@(cpr-ignored-files)))
        '(type "f"))))
 
 (defun cpr-files ()
