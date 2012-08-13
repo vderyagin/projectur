@@ -10,9 +10,8 @@
 
 (defun cpr-ruby-gem-p (dir)
   "Returns non-nil if DIR is a root of ruby gem source tree, nil otherwise."
-  (file-regular-p
-   (file-expand-wildcards
-    (expand-file-name "*.gemspec" dir))))
+  (file-expand-wildcards
+   (expand-file-name "*.gemspec" dir)))
 
 (defun cpr-rails-app-p (dir)
   "Returns non-nil if DIR is a root of ruby-on-rails application, nil otherwise."
