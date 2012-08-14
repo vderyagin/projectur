@@ -1,23 +1,18 @@
-(declare-function cpr--root "current-project" nil)
-
-(defun cpr--file-relative (absolute-path)
-  "Return path, relative to project root for ABSOLUTE-PATH."
-  (file-relative-name absolute-path (cpr--root)))
-
-(defun cpr--file-absolute (relative-path)
-  "Return absolute path for RELATIVE-PATH inside a project."
-  (expand-file-name relative-path (cpr--root)))
-
 ;;;###autoload
 (defun cpr-find-file ()
   "Select file from project and open it in current buffer"
   (interactive)
   (let ((files (cpr-files))
-        relative-path absolute-path)
-    (setq relative-path (ido-completing-read
-                         "Find file in project: "
-                         (mapcar 'cpr--file-relative files))
-          absolute-path (cpr--file-absolute relative-path))
+        relative-path
+        absolute-path)
+    (flet ((get-relative-path (abs)
+             (file-relative-name abs (cpr--root)))
+           (get-absolute-path (rel)
+             (expand-file-name rel (cpr--root))))
+      (setq relative-path (ido-completing-read
+                           "Find file in project: "
+                           (mapcar 'get-relative-path files))
+            absolute-path (get-absolute-path relative-path)))
     (find-file absolute-path)))
 
 ;;;###autoload
