@@ -6,9 +6,9 @@
         relative-path
         absolute-path)
     (flet ((get-relative-path (abs)
-             (file-relative-name abs (cpr--root)))
+             (file-relative-name abs (cpr-project :root)))
            (get-absolute-path (rel)
-             (expand-file-name rel (cpr--root))))
+             (expand-file-name rel (cpr-project :root))))
       (setq relative-path (ido-completing-read
                            "Find file in project: "
                            (mapcar 'get-relative-path files))

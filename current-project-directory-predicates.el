@@ -22,8 +22,7 @@
   "Returns non-nil if DIR is a root of project using rake, nil otherwise."
   (loop
      for rakefile in '("rakefile" "Rakefile" "rakefile.rb" "Rakefile.rb")
-     thereis (file-regular-p
-              (expand-file-name rakefile dir))))
+     thereis (file-regular-p (expand-file-name rakefile dir))))
 
 (defun cpr-bundler-project-p (dir)
   "Returns non-nil if DIR is a root of project using bundler, nil otherwise."

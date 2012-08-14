@@ -48,7 +48,7 @@
   "Current project.")
 (make-variable-buffer-local 'cpr-project)
 
-(defvar cpr-types-specs
+(defvar cpr-type-specs
   '((:type "Ruby on Ralis application"
      :test cpr-rails-app-p
      :ignored-dirs ("tmp"))
@@ -65,36 +65,18 @@
      :test cpr-mercurial-repo-p))
   "A list of plists describing project types.")
 
-(defun cpr--root ()
-  "Get root directory of current project."
-  (plist-get cpr-project :root))
+(defun cpr-project (&optional property)
+  "When PROPERTY argument is provided - returns that property of
+`cpr-project', otherwise returns full object."
+  (if property
+      (plist-get cpr-project property)
+      cpr-project))
 
-(defun cpr--type ()
-  "Get type of current project."
-  (plist-get cpr-project :type))
-
-(defun cpr--name ()
-  "Gent name of current project."
-  (plist-get cpr-project :name))
-
-(defun cpr-ignored-dirs ()
-  (append
-   (cpr-from-spec :ignored-dirs)
-   cpr-ignored-dirs))
-
-(defun cpr-ignored-files ()
-  (append
-   (cpr-from-spec :ignored-files)
-   cpr-ignored-files))
-
-(defun cpr-from-spec (param)
-  (plist-get (cpr-spec-for-project-type (cpr--type)) param))
-
-(defun cpr-valid-p ()
+(defun cpr-project-valid-p ()
   "Check whether current project is valid."
-  (let ((root (cpr--root))
-        (name (cpr--name))
-        (type (cpr--type)))
+  (let ((root (cpr-project :root))
+        (name (cpr-project :name))
+        (type (cpr-project :type)))
     (and
      (stringp root)
      (stringp name)
@@ -104,18 +86,9 @@
      (not (equal type ""))
      (file-directory-p root))))
 
-(defun cpr-name-from-directory (dir)
-  "Get project name from it's root directory path."
-  (file-name-nondirectory
-   (directory-file-name dir)))
-
-(defun cpr-reset-project ()
-  "Reset current project"
-  (setq cpr-project nil))
-
 (defun cpr-fetch ()
   "Populate `cpr-project'"
-  (cpr-reset-project)
+  (setq cpr-project nil)
   (let ((current-dir (file-name-as-directory default-directory)))
     (flet ((reached-filesystem-root-p ()
              (equal current-dir "/"))
@@ -123,6 +96,15 @@
              (setq current-dir
                    (file-name-as-directory
                     (expand-file-name ".." current-dir))))
+           (name-from-directory (dir)
+             (file-name-nondirectory
+              (directory-file-name dir)))
+           (identify-directory (dir)
+             (loop
+                for spec in cpr-type-specs
+                for matches-p = (funcall (plist-get spec :test) dir)
+                for spec-type = (plist-get spec :type)
+                if matches-p return spec-type))
            (set-project-properties (&key root name type)
              (loop
                 for key in '(:root :name :type)
@@ -133,41 +115,37 @@
       (loop
          (when (reached-filesystem-root-p)
            (error "Current buffer does not belong to any project"))
-         (let ((type (cpr-identify-directory current-dir)))
+         (let ((type (identify-directory current-dir)))
            (when type
              (set-project-properties
               :root current-dir
               :type type
-              :name (cpr-name-from-directory current-dir))
+              :name (name-from-directory current-dir))
              (return)))
          (goto-parent-directory)))))
 
-(defun cpr-spec-for-project-type (project-type)
-  "Return project spec based on its type, or nil if not found."
-  (loop
-     for spec in cpr-types-specs
-     for spec-type = (plist-get spec :type)
-     for found-spec-p = (equal spec-type project-type)
-     if found-spec-p return spec))
-
-(defun cpr-identify-directory (directory)
-  "Return project type if DIRECTORY is a valid project root
-accorging to rules defined in `cpr-types-specs',
-nil otherwise"
-  (and (file-directory-p directory)
-       (loop
-          for spec in cpr-types-specs
-          for matches-p = (funcall (plist-get spec :test) directory)
-          for spec-type = (plist-get spec :type)
-          if matches-p return spec-type)))
+(defun cpr-from-spec (param)
+  (let ((spec
+         (loop
+            for spec in cpr-type-specs
+            for spec-type = (plist-get spec :type)
+            for found-spec-p = (equal spec-type (cpr-project :type))
+            if found-spec-p return spec)))
+    (plist-get spec param)))
 
 (defun cpr-build-find-cmd ()
   "Construct find(1) command that returns all files, that belong to current project."
-  (with-cpr-project
-      (find-cmd
-       `(prune (name ,@(cpr-ignored-dirs)))
-       `(not (iname ,@(cpr-ignored-files)))
-       '(type "f"))))
+  (let ((ignored-dirs
+         (append (cpr-from-spec :ignored-dirs)
+                 cpr-ignored-dirs))
+        (ignored-files
+         (append (cpr-from-spec :ignored-files)
+                 cpr-ignored-files)))
+    (with-cpr-project
+        (find-cmd
+         `(prune (name ,@ignored-dirs))
+         `(not (iname ,@ignored-files))
+         '(type "f")))))
 
 (defun cpr-files ()
   "Get list of all files, that belong to current project."
@@ -178,9 +156,9 @@ nil otherwise"
 (defmacro with-cpr-project (&rest body)
   "Execute BODY with `default-directory' bound to current project's root."
   `(progn
-     (unless (cpr-valid-p)
+     (unless (cpr-project-valid-p)
        (cpr-fetch))
-     (let ((default-directory (cpr--root)))
+     (let ((default-directory (cpr-project :root)))
        ,@body)))
 
 (provide 'current-project)
