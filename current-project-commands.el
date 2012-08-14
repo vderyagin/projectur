@@ -53,12 +53,18 @@
       (call-interactively 'shell-command)))
 
 ;;;###autoload
-(defun cpr-generate-tags ()
-  "Use exuberant-ctags(1) to generate TAGS file for current project "
-  (interactive)
+(defun cpr-generate-tags (&optional specify-command)
+  "Use exuberant-ctags(1) to generate TAGS file for current project.
+Allows to specify tags generation command when called with C-u."
+  (interactive "P")
   (with-cpr-project
-      (setq tags-file-name (expand-file-name "TAGS"))
-    (shell-command "exuberant-ctags -e -R .")))
+      (let ((command "exuberant-ctags -e -R ."))
+        (setq tags-file-name (expand-file-name "TAGS"))
+        (when specify-command
+          (setq command
+                (read-string "Generate TAGS like this: "
+                             command nil command)))
+        (shell-command command))))
 
 ;;;###autoload
 (defun cpr-version-control ()
