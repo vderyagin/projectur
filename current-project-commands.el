@@ -33,21 +33,17 @@
 (defun cpr-ack ()
   "Run `ack' command (if available) in context of the current project root directory."
   (interactive)
-  (unless  (require 'ack nil 'noerror)
-    (error "You need `ack' command installed in order to use this functionality"))
-  (when (fboundp 'ack)
-    (with-cpr-project
-        (call-interactively 'ack))))
+  (if (fboundp 'ack)
+      (with-cpr-project (call-interactively 'ack))
+      (error "You need `ack' command installed in order to use this functionality")))
 
 ;;;###autoload
 (defun cpr-smex ()
   "Run `smex' command (if available) in context of the current project root directory."
   (interactive)
-  (unless (require 'smex nil 'noerror)
-    (error "You need `smex' command (https://github.com/nonsequitur/smex/) installed in order to use this functionality"))
-  (when (fboundp 'smex)
-    (with-cpr-project
-        (call-interactively 'smex))))
+  (if (fboundp 'smex)
+      (with-cpr-project (call-interactively 'smex))
+      (error "You need `smex' command (https://github.com/nonsequitur/smex/) installed in order to use this functionality")))
 
 ;;;###autoload
 (defun cpr-execute-shell-command ()
