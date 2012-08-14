@@ -20,13 +20,10 @@
 
 (defun cpr-rake-project-p (dir)
   "Returns non-nil if DIR is a root of project using rake, nil otherwise."
-  (catch 'found-rakefile
-    (mapc
-     (lambda (file)
-       (when (file-regular-p (expand-file-name file dir))
-         (throw 'found-rakefile t)))
-     '("rakefile" "Rakefile" "rakefile.rb" "Rakefile.rb"))
-    nil))
+  (loop
+     for rakefile in '("rakefile" "Rakefile" "rakefile.rb" "Rakefile.rb")
+     thereis (file-regular-p
+              (expand-file-name rakefile dir))))
 
 (defun cpr-bundler-project-p (dir)
   "Returns non-nil if DIR is a root of project using bundler, nil otherwise."
