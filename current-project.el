@@ -52,13 +52,6 @@
   '((:type "Ruby on Ralis application"
      :test cpr-rails-app-p
      :ignored-dirs ("tmp"))
-    (:type "Ruby Gem"
-     :test cpr-ruby-gem-p
-     :ignored-dirs ("pkg"))
-    (:type "Bundler project"
-     :test cpr-bundler-project-p)
-    (:type "Rake project"
-     :test cpr-rake-project-p)
     (:type "Generic Git project"
      :test cpr-git-repo-p)
     (:type "Generic Mercurial project"
