@@ -35,6 +35,10 @@
 (require 'current-project-directory-predicates)
 (require 'current-project-commands)
 
+(defvar cpr-project nil
+  "Current project.")
+(make-variable-buffer-local 'cpr-project)
+
 (defvar cpr-ignored-dirs
   '(".hg" ".git" ".bzr" ".svn" "_darcs" "_MTN" "CVS" "RCS" "SCCS")
   "List of names of directories, content of which will not be considered part of the project.")
@@ -43,10 +47,6 @@
   '("*.elc" "*.rbc" "*.py[co]" "*.a" "*.o" "*.so" "*.bin"
     "*.class" "*.s[ac]ssc" "*.sqlite3" "TAGS" ".gitkeep")
   "List of wildcards, matching names of files, which will not be considered part of the project.")
-
-(defvar cpr-project nil
-  "Current project.")
-(make-variable-buffer-local 'cpr-project)
 
 (defvar cpr-type-specs
   '((:type "Ruby on Ralis application"
