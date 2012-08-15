@@ -92,19 +92,23 @@
   (let ((current-dir (file-name-as-directory default-directory)))
     (flet ((reached-filesystem-root-p ()
              (equal current-dir "/"))
+
            (goto-parent-directory ()
              (setq current-dir
                    (file-name-as-directory
                     (expand-file-name ".." current-dir))))
+
            (name-from-directory (dir)
              (file-name-nondirectory
               (directory-file-name dir)))
+
            (identify-directory (dir)
              (loop
                 for spec in cpr-type-specs
                 for matches-p = (funcall (plist-get spec :test) dir)
                 for spec-type = (plist-get spec :type)
                 if matches-p return spec-type))
+
            (set-project-properties (&key root name type)
              (loop
                 for key in '(:root :name :type)
@@ -112,6 +116,7 @@
                 if val do
                   (setq cpr-project
                         (plist-put cpr-project key val)))))
+
       (loop
          (when (reached-filesystem-root-p)
            (error "Current buffer does not belong to any project"))
