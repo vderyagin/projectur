@@ -104,8 +104,9 @@
 
            (set-project-properties (&key root name type)
              (loop
-                for key in '(:root :name :type)
-                for val in `(,root ,name ,type)
+                for prop in '(root name type)
+                for key = (intern (concat ":" (symbol-name prop)))
+                for val = (symbol-value prop)
                 if val do
                   (setq cpr-project
                         (plist-put cpr-project key val)))))
