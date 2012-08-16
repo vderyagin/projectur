@@ -81,7 +81,7 @@
 
 (defun cpr-fetch ()
   "Populate `cpr-project'"
-  (setq cpr-project nil)
+  (setq cpr-project nil)                ; reset it first
   (let ((current-dir (file-name-as-directory default-directory)))
     (flet ((reached-filesystem-root-p ()
              (equal current-dir "/"))
