@@ -153,6 +153,7 @@
 ;;;###autoload
 (defmacro with-cpr-project (&rest body)
   "Execute BODY with `default-directory' bound to current project's root."
+  (declare (indent 0))
   `(progn
      (unless (cpr-project-valid-p)
        (cpr-fetch))

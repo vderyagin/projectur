@@ -20,14 +20,14 @@
   "Go to currrent project's root directory."
   (interactive)
   (with-cpr-project
-      (find-file default-directory)))
+    (find-file default-directory)))
 
 ;;;###autoload
 (defun cpr-rgrep ()
   "Run `rgrep' command in context of the current project root directory."
   (interactive)
   (with-cpr-project
-      (call-interactively 'rgrep)))
+    (call-interactively 'rgrep)))
 
 ;;;###autoload
 (defun cpr-ack ()
@@ -50,7 +50,7 @@
   "Execute shell command in context of the current project root directory."
   (interactive)
   (with-cpr-project
-      (call-interactively 'shell-command)))
+    (call-interactively 'shell-command)))
 
 ;;;###autoload
 (defun cpr-generate-tags (&optional specify-command)
@@ -58,30 +58,30 @@
 Allows to specify tags generation command when called with C-u."
   (interactive "P")
   (with-cpr-project
-      (let ((command "exuberant-ctags -e -R ."))
-        (setq tags-file-name (expand-file-name "TAGS"))
-        (when specify-command
-          (setq command
-                (read-string "Generate TAGS like this: "
-                             command nil command)))
-        (shell-command command))))
+    (let ((command "exuberant-ctags -e -R ."))
+      (setq tags-file-name (expand-file-name "TAGS"))
+      (when specify-command
+        (setq command
+              (read-string "Generate TAGS like this: "
+                           command nil command)))
+      (shell-command command))))
 
 ;;;###autoload
 (defun cpr-version-control ()
   "Open appropriate version control interface for current project."
   (interactive)
   (with-cpr-project
-      (let ((root default-directory))
-        (cond
-          ((and
-            (file-exists-p ".git")
-            (fboundp 'magit-status))
-           (magit-status root))
-          ((and
-            (file-exists-p ".hg")
-            (fboundp 'ahg-status))
-           (ahg-status root))
-          (t
-           (vc-dir root nil))))))
+    (let ((root default-directory))
+      (cond
+        ((and
+          (file-exists-p ".git")
+          (fboundp 'magit-status))
+         (magit-status root))
+        ((and
+          (file-exists-p ".hg")
+          (fboundp 'ahg-status))
+         (ahg-status root))
+        (t
+         (vc-dir root nil))))))
 
 (provide 'current-project-commands)
