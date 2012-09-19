@@ -40,7 +40,7 @@
 (make-variable-buffer-local 'cpr-project)
 
 (defvar cpr-ignored-dirs
-  '(".hg" ".git" ".bzr" ".svn" "_darcs" "_MTN" "CVS" "RCS" "SCCS")
+  '(".hg" ".git" ".bzr" ".svn" "_darcs" "_MTN" "CVS" "RCS" "SCCS" ".rbx")
   "List of names of directories, content of which will not be considered part of the project.")
 
 (defvar cpr-ignored-files
