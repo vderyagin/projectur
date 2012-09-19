@@ -55,7 +55,9 @@
     (:type "Generic Git project"
      :test cpr-git-repo-p)
     (:type "Generic Mercurial project"
-     :test cpr-mercurial-repo-p))
+     :test cpr-mercurial-repo-p)
+    (:type "Generic Subversion project"
+     :test cpr-subversion-repo-p))
   "A list of plists describing project types.")
 
 (defun cpr-project (&optional property)
