@@ -141,15 +141,18 @@
          (append (cpr-from-spec :ignored-files)
                  cpr-ignored-files)))
     (with-cpr-project
-        (find-cmd
-         `(prune (name ,@ignored-dirs))
-         `(not (iname ,@ignored-files))
-         '(type "f")))))
+      (find-cmd
+       `(prune (name ,@ignored-dirs))
+       `(not (iname ,@ignored-files))
+       '(type "f")
+       '(print0)))))
 
 (defun cpr-files ()
   "Get list of all files, that belong to current project."
-  (split-string
-   (shell-command-to-string (cpr-build-find-cmd))))
+  (delete ""
+          (split-string
+           (shell-command-to-string (cpr-build-find-cmd))
+           "\0")))
 
 ;;;###autoload
 (defmacro with-cpr-project (&rest body)
