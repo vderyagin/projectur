@@ -1,3 +1,6 @@
+(eval-when-compile
+  (require 'cl))
+
 (defun cpr-git-repo-p (dir)
   "Returns non-nil if DIR is a root of git repository, nil otherwise."
   (file-directory-p
