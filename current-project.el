@@ -56,6 +56,8 @@
      :test cpr-git-repo-p)
     (:type "Generic Mercurial project"
      :test cpr-mercurial-repo-p)
+    (:type "Generic Darcs project"
+     :test cpr-darcs-repo-p)
     (:type "Generic Subversion project"
      :test cpr-subversion-repo-p)
     (:type "Generic CVS project"

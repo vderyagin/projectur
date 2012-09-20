@@ -28,6 +28,11 @@
    (not
     (file-directory-p (expand-file-name "../CVS" dir)))))
 
+(defun cpr-darcs-repo-p (dir)
+  "Returns non-nil if DIR is a root of Darcs repository, nil otherwise."
+  (file-directory-p
+   (expand-file-name "_darcs" dir)))
+
 (defun cpr-ruby-gem-p (dir)
   "Returns non-nil if DIR is a root of ruby gem source tree, nil otherwise."
   (file-expand-wildcards
