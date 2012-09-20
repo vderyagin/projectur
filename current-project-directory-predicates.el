@@ -21,6 +21,13 @@
    (not
     (file-directory-p (expand-file-name "../.svn" dir)))))
 
+(defun cpr-cvs-repo-p (dir)
+  "Returns non-nil if DIR is a root of CVS repository, nil otherwise."
+  (and
+   (file-directory-p (expand-file-name "CVS" dir))
+   (not
+    (file-directory-p (expand-file-name "../CVS" dir)))))
+
 (defun cpr-ruby-gem-p (dir)
   "Returns non-nil if DIR is a root of ruby gem source tree, nil otherwise."
   (file-expand-wildcards
