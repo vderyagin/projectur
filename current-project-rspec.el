@@ -10,6 +10,7 @@
             (let ((inhibit-read-only t))
               (ansi-color-apply-on-region (point-min) (point-max)))))
 
+;;;###autoload
 (defun cpr-rspec (arg)
   "Without prefix argument executes spec found at current point position.
 With single prefix argument executes all spec found in current file.
@@ -23,7 +24,6 @@ With double prefix argument executes whole rspec suite of current project."
     ((eq arg 16)
      (cpr-rspec-execute-specs 'suite))))
 
-;;;###autoload
 (defun cpr-rspec-execute-specs (scope)
   "Executes rspec examples selected according to SCOPE.
 if SCOPE = 'at-point - example found at current point position.
