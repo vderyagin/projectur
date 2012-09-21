@@ -85,49 +85,51 @@
      (not (equal type ""))
      (file-directory-p root))))
 
-(defun cpr-fetch ()
+(defun cpr-fetch (&optional force)
   "Populate `cpr-project'"
-  (setq cpr-project nil)                ; reset it first
-  (let ((current-dir (file-name-as-directory default-directory)))
-    (flet ((reached-filesystem-root-p ()
-             (equal current-dir "/"))
+  (when force
+    (setq cpr-project nil))                ; reset it first
+  (unless (cpr-project-valid-p)
+    (let ((current-dir (file-name-as-directory default-directory)))
+      (flet ((reached-filesystem-root-p ()
+               (equal current-dir "/"))
 
-           (goto-parent-directory ()
-             (setq current-dir
-                   (file-name-as-directory
-                    (expand-file-name ".." current-dir))))
+             (goto-parent-directory ()
+               (setq current-dir
+                     (file-name-as-directory
+                      (expand-file-name ".." current-dir))))
 
-           (name-from-directory (dir)
-             (file-name-nondirectory
-              (directory-file-name dir)))
+             (name-from-directory (dir)
+               (file-name-nondirectory
+                (directory-file-name dir)))
 
-           (identify-directory (dir)
-             (loop
-                for spec in cpr-type-specs
-                for matches-p = (funcall (plist-get spec :test) dir)
-                for spec-type = (plist-get spec :type)
-                if matches-p return spec-type))
+             (identify-directory (dir)
+               (loop
+                  for spec in cpr-type-specs
+                  for matches-p = (funcall (plist-get spec :test) dir)
+                  for spec-type = (plist-get spec :type)
+                  if matches-p return spec-type))
 
-           (set-project-properties (&key root name type)
-             (loop
-                for prop in '(root name type)
-                for key = (intern (concat ":" (symbol-name prop)))
-                for val = (symbol-value prop)
-                if val do
-                  (setq cpr-project
-                        (plist-put cpr-project key val)))))
+             (set-project-properties (&key root name type)
+               (loop
+                  for prop in '(root name type)
+                  for key = (intern (concat ":" (symbol-name prop)))
+                  for val = (symbol-value prop)
+                  if val do
+                    (setq cpr-project
+                          (plist-put cpr-project key val)))))
 
-      (loop
-         (when (reached-filesystem-root-p)
-           (error "Current buffer does not belong to any project"))
-         (let ((type (identify-directory current-dir)))
-           (when type
-             (set-project-properties
-              :root current-dir
-              :type type
-              :name (name-from-directory current-dir))
-             (return)))
-         (goto-parent-directory)))))
+        (loop
+           (when (reached-filesystem-root-p)
+             (error "Current buffer does not belong to any project"))
+           (let ((type (identify-directory current-dir)))
+             (when type
+               (set-project-properties
+                :root current-dir
+                :type type
+                :name (name-from-directory current-dir))
+               (return)))
+           (goto-parent-directory))))))
 
 (defun cpr-from-spec (param)
   (let ((spec
@@ -165,8 +167,7 @@
   "Execute BODY with `default-directory' bound to current project's root."
   (declare (indent 0))
   `(progn
-     (unless (cpr-project-valid-p)
-       (cpr-fetch))
+     (cpr-fetch)
      (let ((default-directory (cpr-project :root)))
        ,@body)))
 
