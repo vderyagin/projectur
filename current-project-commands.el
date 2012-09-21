@@ -92,4 +92,14 @@ in context of the current project root directory"
   (with-cpr-project
     (compile "rspec")))
 
+;;;###autoload
+(defun cpr-save ()
+  "Saves all buffers, visiting files within current project."
+  (interactive)
+  (mapc
+   (lambda (buf)
+     (with-current-buffer buf
+       (save-buffer)))
+   (cpr-buffers)))
+
 (provide 'current-project-commands)
