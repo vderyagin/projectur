@@ -102,4 +102,8 @@ in context of the current project root directory"
        (save-buffer)))
    (cpr-buffers)))
 
+(defun cpr-open-other-project-root ()
+  (interactive)
+  (find-file (cpr-choose-project-from-history)))
+
 (provide 'current-project-commands)
