@@ -74,11 +74,11 @@ Allows to specify tags generation command when called with C-u."
     (let ((root default-directory))
       (cond
         ((and
-          (file-exists-p ".git")
+          (cpr-git-repo-p root)
           (fboundp 'magit-status))
          (magit-status root))
         ((and
-          (file-exists-p ".hg")
+          (cpr-mercurial-repo-p root)
           (fboundp 'ahg-status))
          (ahg-status root))
         (t
