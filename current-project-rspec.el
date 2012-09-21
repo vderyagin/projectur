@@ -27,7 +27,6 @@
 if SCOPE = 'at-point - example found at current point position.
 if SCOPE = 'file - examples found in currently visited file.
 if SCOPE = 'suite - whole rspec suite."
-  (interactive)
   (with-cpr-project
     (let ((file (file-relative-name buffer-file-name default-directory))
           (line-number (line-number-at-pos))
