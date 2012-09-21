@@ -10,8 +10,10 @@
             (let ((inhibit-read-only t))
               (ansi-color-apply-on-region (point-min) (point-max)))))
 
-
 (defun cpr-rspec (arg)
+  "Without prefix argument executes spec found at current point position.
+With single prefix argument executes all spec found in current file.
+With double prefix argument executes whole rspec suite of current project."
   (interactive "p")
   (cond
     ((eq arg 1)
