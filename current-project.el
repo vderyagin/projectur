@@ -162,6 +162,23 @@
            (shell-command-to-string (cpr-build-find-cmd))
            "\0")))
 
+(defun cpr-buffer-in-project-p (buffer-or-name)
+  "Determines if BUFFER-OR-NAME is visiting a file which belongs to current project."
+  (cpr-fetch)
+  (let ((root (cpr-project :root))
+        (buf (get-buffer buffer-or-name)))
+    (with-current-buffer buf
+      (and
+       buffer-file-name
+       (string-prefix-p root buffer-file-name)))))
+
+(defun cpr-buffers ()
+  "Returns list of buffers, visiting a files belonging to current project."
+  (loop
+     for buf in (buffer-list)
+     if (cpr-buffer-in-project-p buf)
+     collect buf))
+
 ;;;###autoload
 (defmacro with-cpr-project (&rest body)
   "Execute BODY with `default-directory' bound to current project's root."
