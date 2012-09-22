@@ -104,6 +104,12 @@ in context of the current project root directory"
 
 (defun cpr-open-other-project-root ()
   (interactive)
-  (find-file (cpr-choose-project-from-history)))
+  (let ((cpr-project (cpr-choose-project-from-history)))
+    (cpr-goto-root)))
+
+(defun cpr-open-file-from-other-project ()
+  (interactive)
+  (let ((cpr-project (cpr-choose-project-from-history)))
+    (cpr-find-file)))
 
 (provide 'current-project-commands)

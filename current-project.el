@@ -185,9 +185,16 @@
 (defun cpr-choose-project-from-history ()
   (let ((roots (mapcar
                 (lambda (pr)
-                  (plist-get pr :root))
+                  (let ((cpr-project pr))
+                    (cpr-project :root)))
                 cpr-history)))
-    (ido-completing-read "Select project: " roots)))
+    (loop
+       with root = (ido-completing-read "Select project: " roots)
+       for project in cpr-history
+       if (equal root
+                 (let ((cpr-project project))
+                   (cpr-project :root)))
+       return project)))
 
 ;;;###autoload
 (defmacro with-cpr-project (&rest body)
