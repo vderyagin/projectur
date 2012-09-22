@@ -87,6 +87,12 @@
      (not (equal type ""))
      (file-directory-p root))))
 
+
+(defun cpr-name-from-directory (dir)
+  "Extract project name from its root directory path."
+  (file-name-nondirectory
+   (directory-file-name dir)))
+
 (defun cpr-fetch (&optional force)
   "Populate `cpr-project'"
   (when force
@@ -100,10 +106,6 @@
                (setq current-dir
                      (file-name-as-directory
                       (expand-file-name ".." current-dir))))
-
-             (name-from-directory (dir)
-               (file-name-nondirectory
-                (directory-file-name dir)))
 
              (identify-directory (dir)
                (loop
@@ -129,7 +131,7 @@
                (set-project-properties
                 :root current-dir
                 :type type
-                :name (name-from-directory current-dir))
+                :name (cpr-name-from-directory current-dir))
                (return)))
            (goto-parent-directory)))))
   (add-to-list 'cpr-history (cpr-project)))
@@ -183,26 +185,24 @@
      collect buf))
 
 (defun cpr-choose-project-from-history ()
-  (let ((choices (mapcar
-                  (lambda (pr)
-                    (let* ((cpr-project pr)
-                           (root (cpr-project :root))
-                           (name (file-name-nondirectory
-                                  (directory-file-name root))))
-                      (format "%-25s (%s)" name (abbreviate-file-name root))))
-                  cpr-history)))
-
-    (loop
-       with choice = (ido-completing-read "Select project: " choices nil 'require-match)
-       with root = (expand-file-name
-                    (progn
-                      (string-match "\(\\([/~].+\\)\)$" choice)
-                      (match-string 1 choice)))
-       for project in cpr-history
-       if (equal root
-                 (let ((cpr-project project))
-                   (cpr-project :root)))
-       return project)))
+  (loop
+     with choices = (mapcar
+                     (lambda (pr)
+                       (let* ((cpr-project pr)
+                              (root (cpr-project :root))
+                              (name (cpr-name-from-directory root)))
+                         (format "%-25s (%s)" name (abbreviate-file-name root))))
+                     cpr-history)
+     with choice = (ido-completing-read "Select project: " choices nil 'require-match)
+     with root = (expand-file-name
+                  (progn
+                    (string-match "\(\\([/~].+\\)\)$" choice)
+                    (match-string 1 choice)))
+     for project in cpr-history
+     if (equal root
+               (let ((cpr-project project))
+                 (cpr-project :root)))
+     return project))
 
 ;;;###autoload
 (defmacro with-cpr-project (&rest body)
