@@ -64,6 +64,8 @@
      :test cpr-cvs-repo-p))
   "A list of plists describing project types.")
 
+(defvar cpr-history nil "List visited projects.")
+
 (defun cpr-project (&optional property)
   "When PROPERTY argument is provided - returns that property of
 `cpr-project', otherwise returns full object."
@@ -129,7 +131,8 @@
                 :type type
                 :name (name-from-directory current-dir))
                (return)))
-           (goto-parent-directory))))))
+           (goto-parent-directory)))))
+  (add-to-list 'cpr-history (cpr-project)))
 
 (defun cpr-from-spec (param)
   (let ((spec
@@ -178,6 +181,20 @@
      for buf in (buffer-list)
      if (cpr-buffer-in-project-p buf)
      collect buf))
+
+(defun cpr-choose-project-from-history ()
+  (let ((roots (mapcar
+                (lambda (pr)
+                  (let ((cpr-project pr))
+                    (cpr-project :root)))
+                cpr-history)))
+    (loop
+       with root = (ido-completing-read "Select project: " roots)
+       for project in cpr-history
+       if (equal root
+                 (let ((cpr-project project))
+                   (cpr-project :root)))
+       return project)))
 
 ;;;###autoload
 (defmacro with-cpr-project (&rest body)
