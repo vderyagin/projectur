@@ -73,19 +73,20 @@
       (plist-get cpr-project property)
       cpr-project))
 
-(defun cpr-project-valid-p ()
+(defun cpr-project-valid-p (project)
   "Check whether current project is valid."
-  (let ((root (cpr-project :root))
-        (name (cpr-project :name))
-        (type (cpr-project :type)))
-    (and
-     (stringp root)
-     (stringp name)
-     (stringp type)
-     (not (equal root ""))
-     (not (equal name ""))
-     (not (equal type ""))
-     (file-directory-p root))))
+  (let ((cpr-project project))
+    (let ((root (cpr-project :root))
+          (name (cpr-project :name))
+          (type (cpr-project :type)))
+      (and
+       (stringp root)
+       (stringp name)
+       (stringp type)
+       (not (equal root ""))
+       (not (equal name ""))
+       (not (equal type ""))
+       (file-directory-p root)))))
 
 
 (defun cpr-name-from-directory (dir)
@@ -97,7 +98,7 @@
   "Populate `cpr-project'"
   (when force
     (setq cpr-project nil))                ; reset it first
-  (unless (cpr-project-valid-p)
+  (unless (cpr-project-valid-p cpr-project)
     (let ((current-dir (file-name-as-directory default-directory)))
       (flet ((reached-filesystem-root-p ()
                (equal current-dir "/"))
@@ -184,7 +185,15 @@
      if (cpr-buffer-in-project-p buf)
      collect buf))
 
+(defun cpr-history-cleanup ()
+  (setq cpr-history
+        (loop
+           for project in cpr-history
+           if (cpr-project-valid-p project)
+           collect project)))
+
 (defun cpr-choose-project-from-history ()
+  (cpr-history-cleanup)
   (loop
      with choices = (mapcar
                      (lambda (pr)
