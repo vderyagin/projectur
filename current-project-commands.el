@@ -1,10 +1,13 @@
 ;;;###autoload
-(defun cpr-find-file ()
+(defun cpr-find-file (&optional choose-project)
   "Select file from project and open it in current buffer"
-  (interactive)
-  (let ((files (cpr-files))
-        relative-path
-        absolute-path)
+  (interactive "P")
+  (let* ((cpr-project (if choose-project
+                          (cpr-choose-project-from-history)
+                          cpr-project))
+         (files (cpr-files))
+         relative-path
+         absolute-path)
     (flet ((get-relative-path (abs)
              (file-relative-name abs (cpr-project :root)))
            (get-absolute-path (rel)
@@ -16,11 +19,14 @@
     (find-file absolute-path)))
 
 ;;;###autoload
-(defun cpr-goto-root ()
+(defun cpr-goto-root (&optional choose-project)
   "Go to currrent project's root directory."
-  (interactive)
-  (with-cpr-project
-    (find-file default-directory)))
+  (interactive "P")
+  (let ((cpr-project (if choose-project
+                         (cpr-choose-project-from-history)
+                         cpr-project)))
+    (with-cpr-project
+      (find-file default-directory))))
 
 ;;;###autoload
 (defun cpr-rgrep ()
