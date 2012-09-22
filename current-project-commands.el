@@ -100,14 +100,4 @@ Allows to specify tags generation command when called with C-u."
        (save-buffer)))
    (cpr-buffers)))
 
-(defun cpr-open-other-project-root ()
-  (interactive)
-  (let ((cpr-project (cpr-choose-project-from-history)))
-    (cpr-goto-root)))
-
-(defun cpr-open-file-from-other-project ()
-  (interactive)
-  (let ((cpr-project (cpr-choose-project-from-history)))
-    (cpr-find-file)))
-
 (provide 'current-project-commands)
