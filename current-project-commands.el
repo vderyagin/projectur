@@ -6,12 +6,13 @@
                           (cpr-choose-project-from-history)
                           cpr-project))
          (files (cpr-files))
+         (root (cpr-project :root))
          relative-path
          absolute-path)
     (flet ((get-relative-path (abs)
-             (file-relative-name abs (cpr-project :root)))
+             (file-relative-name abs root))
            (get-absolute-path (rel)
-             (expand-file-name rel (cpr-project :root))))
+             (expand-file-name rel root)))
       (setq relative-path (ido-completing-read
                            "Find file in project: "
                            (mapcar 'get-relative-path files))
