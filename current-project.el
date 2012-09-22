@@ -183,13 +183,21 @@
      collect buf))
 
 (defun cpr-choose-project-from-history ()
-  (let ((roots (mapcar
-                (lambda (pr)
-                  (let ((cpr-project pr))
-                    (cpr-project :root)))
-                cpr-history)))
+  (let ((choices (mapcar
+                  (lambda (pr)
+                    (let* ((cpr-project pr)
+                           (root (cpr-project :root))
+                           (name (file-name-nondirectory
+                                  (directory-file-name root))))
+                      (format "%-25s (%s)" name (abbreviate-file-name root))))
+                  cpr-history)))
+
     (loop
-       with root = (ido-completing-read "Select project: " roots)
+       with choice = (ido-completing-read "Select project: " choices nil 'require-match)
+       with root = (expand-file-name
+                    (progn
+                      (string-match "\(\\([/~].+\\)\)$" choice)
+                      (match-string 1 choice)))
        for project in cpr-history
        if (equal root
                  (let ((cpr-project project))
