@@ -64,7 +64,7 @@
      :test cpr-cvs-repo-p))
   "A list of plists describing project types.")
 
-(defvar cpr-history nil "List visited projects.")
+(defvar cpr-history nil "List of visited projects.")
 
 (defun cpr-project (&optional property)
   "When PROPERTY argument is provided - returns that property of
