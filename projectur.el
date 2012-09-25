@@ -75,16 +75,23 @@ buffer does not belong to any project"
 
 (defun projectur-choose-project-from-history ()
   "Select single project from `projectur-history'."
-  (loop
-     with roots =  (mapcar 'car projectur-history)
-     with chosen-root = (ido-completing-read "Choose project:" roots)
-     for project in projectur-history
-     if (equal chosen-root (car project))
-     return project))
+  (projectur-complete
+   "Choose project:" projectur-history
+   (lambda (project)
+     (let* ((root (abbreviate-file-name
+                   (projectur-project-root project)))
+            (name (projectur-project-name project)))
+       (format "%-25s (%s)" name root)))))
 
 (defun projectur-project-root (project)
   "Return root directory of PROJECT."
   (car project))
+
+(defun projectur-project-name (project)
+  "Return name of PROJECT."
+  (file-name-nondirectory
+   (directory-file-name
+    (projectur-project-root project))))
 
 (defun projectur-project-ignored-dirs (project)
   "Return list of ignored directories for PROJECT."
@@ -114,8 +121,8 @@ buffer does not belong to any project"
        "\nproject in context of which command is being executed.")
      (interactive "P")
      (let* ((current-project (projectur-current-project))
-            (project (if (and current-project
-                              (not choose-project))
+            (project (if (and (not choose-project)
+                              current-project)
                          current-project
                          (projectur-choose-project-from-history))))
        (projectur-with-project project
@@ -150,20 +157,30 @@ buffer does not belong to any project"
   "Open file from current project."
   (let ((files (projectur-project-files project)))
     (find-file
-     (ido-completing-read
-      "Find file in project:"
-      files))))
+     (projectur-complete "Find file in project: " files
+                         (lambda (file)
+                           (file-relative-name file (projectur-project-root project)))))))
 
 (projectur-define-command projectur-rgrep
   "Run `rgrep' command in context of the current project root directory."
   (call-interactively 'rgrep))
 
-
 (projectur-define-command cpr-execute-shell-command ()
   "Execute shell command in context of the current project root directory."
-  (interactive)
   (call-interactively 'shell-command))
 
+(defun* projectur-complete (prompt choices &optional (display-fn 'identity))
+  "Select one of CHOICES, with PROMPT, use DISPLAY-FN for display if provided,
+`identity' otherwise."
+  (let* ((results-map
+          (mapcar (lambda (choice)
+                    (cons (funcall display-fn choice) choice))
+                  choices))
+         (display-choices
+          (mapcar 'car results-map))
+         (chosen
+          (ido-completing-read prompt display-choices)))
+    (cdr (assoc chosen results-map))))
 
 (font-lock-add-keywords
  'emacs-lisp-mode
@@ -226,3 +243,5 @@ buffer does not belong to any project"
   "Returns non-nil if DIR is a root of project using bundler, nil otherwise."
   (file-regular-p
    (expand-file-name "Gemfile" dir)))
+
+(provide 'projectur)
