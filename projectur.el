@@ -51,6 +51,8 @@
 (defvar projectur-history nil
   "List of visited projects.")
 
+(defvar projectur-tags-command "exuberant-ctags -e --recurse .")
+
 (defun projectur-history-cleanup ()
   (setq projectur-history
         (loop
@@ -117,6 +119,12 @@ buffer does not belong to any project"
 (defun projectur-project-root (project)
   "Return root directory of PROJECT."
   (car project))
+
+(defun projectur-project-tags-command (project)
+  "Return TAGS generation comman for PROJECT."
+  (or
+   (plist-get (cdr project) :tags-command)
+   projectur-tags-command))
 
 (defun projectur-project-name (project)
   "Return name of PROJECT."
@@ -256,8 +264,7 @@ buffer does not belong to any project"
 
 (projectur-define-command projectur-generate-tags
   "Generate TAGS file for current project."
-  (let ((command (format "exuberant-ctags -e -R %s"
-                         (shell-quote-argument default-directory))))
+  (let ((command (projectur-project-tags-command project)))
     (shell-command
      (read-string "Generate TAGS like this: "
                   command nil command))
