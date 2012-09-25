@@ -144,10 +144,13 @@ buffer does not belong to any project"
        (string-prefix-p root buffer-file-name)))))
 
 (defmacro projectur-with-project (project &rest body)
-  "execute BODY with `default-directory' bound to PROJECT root directory."
+  "Execute BODY with `default-directory' bound to PROJECT root directory."
   (declare (indent 1))
-  `(let ((default-directory (projectur-project-root ,project)))
-     ,@body))
+  `(progn
+     (unless (projectur-project-valid-p ,project)
+       (error (format "Invalid project: %s" ,project)))
+     (let ((default-directory (projectur-project-root ,project)))
+       ,@body)))
 
 ;;;###autoload
 (defmacro projectur-define-command (command-name docstring &rest body)
