@@ -7,8 +7,8 @@
   '(("Ruby on Ralis application"
      :test projectur-rails-app-p
      :ignored-dirs ("tmp"))
-    ("Generic Git project"
-     :test projectur-git-repo-p))
+    ("Project under verision control"
+     :test projectur-version-controlled-repo-p))
   "A list of plists describing project types.")
 
 (defvar projectur-ignored-dirs
@@ -243,5 +243,15 @@ buffer does not belong to any project"
   "Returns non-nil if DIR is a root of project using bundler, nil otherwise."
   (file-regular-p
    (expand-file-name "Gemfile" dir)))
+
+(defun projectur-version-controlled-repo-p (dir)
+  "Returns non-nil if DIR is a root of version-controlled project, nil otherwise.
+Supported version control systems: git, mercurial, subversion, cvs, darcs."
+  (or
+   (projectur-git-repo-p dir)
+   (projectur-mercurial-repo-p dir)
+   (projectur-subversion-repo-p dir)
+   (projectur-cvs-repo-p dir)
+   (projectur-darcs-repo-p dir)))
 
 (provide 'projectur)
