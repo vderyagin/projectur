@@ -10,6 +10,16 @@
             (let ((inhibit-read-only t))
               (ansi-color-apply-on-region (point-min) (point-max)))))
 
+(defvar projectur-rspec-use-bundler nil
+  "Non-nil means use bundler for executing rspec whenever available.")
+
+(defun projectur-rspec-default-command ()
+  "Returns default command for rspec execution"
+  (if (and projectur-rspec-use-bundler
+           (executable-find "bundle"))
+      '("bundle" "exec" "rspec")
+      '("rspec")))
+
 ;;;###autoload
 (defun projectur-rspec (&optional arg)
   "Without prefix argument executes spec found at current point position.
@@ -40,7 +50,7 @@ if SCOPE = 'suite - whole rspec suite."
   (projectur-with-project (projectur-current-project)
     (let ((file (file-relative-name buffer-file-name default-directory))
           (line-number (line-number-at-pos))
-          (command '("rspec")))
+          (command (projectur-rspec-default-command)))
 
       (when (eq scope 'at-point)
         (add-to-list 'command "--line_number" 'append)
