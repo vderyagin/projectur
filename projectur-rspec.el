@@ -50,15 +50,16 @@ if SCOPE = 'at-point - example found at current point position.
 if SCOPE = 'file - examples found in currently visited file.
 if SCOPE = 'suite - whole rspec suite."
   (projectur-with-project (projectur-current-project)
-    (let ((file (file-relative-name buffer-file-name default-directory))
-          (line-number (line-number-at-pos))
-          (command (projectur-rspec-default-command)))
+    (let ((line-number (line-number-at-pos))
+          (command (projectur-rspec-default-command))
+          file)
 
       (setq command
             (append command
                     (when (eq scope 'at-point)
                       (list "--line_number" (number-to-string line-number)))
                     (unless (eq scope 'suite)
+                      (setq file (file-relative-name buffer-file-name))
                       (list (shell-quote-argument file)))))
 
       (setq command (mapconcat 'identity command " "))
