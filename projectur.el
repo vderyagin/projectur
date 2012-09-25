@@ -248,7 +248,9 @@ buffer does not belong to any project"
 (projectur-define-command projectur-delete-from-history
   "Delete current project from `projectur-history'"
   (setq projectur-history
-        (delete project projectur-history)))
+        (delete project projectur-history))
+  (message "Project \"%s\" deleted from history."
+           (abbreviate-file-name (projectur-project-root project))))
 
 (projectur-define-command projectur-version-control
   "Open appropriate version control interface for current project."
