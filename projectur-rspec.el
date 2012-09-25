@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (require 'projectur)
 
 (define-compilation-mode rspec-mode "Rspec" "Mode for executing Rspec specs.")
@@ -52,17 +54,16 @@ if SCOPE = 'suite - whole rspec suite."
           (line-number (line-number-at-pos))
           (command (projectur-rspec-default-command)))
 
-      (when (eq scope 'at-point)
-        (add-to-list 'command "--line_number" 'append)
-        (add-to-list 'command (number-to-string line-number) 'append))
-
-      (unless (eq scope 'suite)
-        (add-to-list 'command (shell-quote-argument file) 'append))
+      (setq command
+            (append command
+                    (when (eq scope 'at-point)
+                      (list "--line_number" (number-to-string line-number)))
+                    (unless (eq scope 'suite)
+                      (list (shell-quote-argument file)))))
 
       (setq command (mapconcat 'identity command " "))
 
       (projectur-save)
-
       (compilation-start command 'rspec-mode))))
 
 (provide 'projectur-rspec)
