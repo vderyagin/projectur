@@ -30,10 +30,11 @@
   (require 'cl))
 
 (defvar projectur-project-types
-  '(("Ruby on Ralis application"
-     :test projectur-rails-app-p
-     :ignored-dirs ("tmp"))
-    ("Project under verision control"
+  '(("Version-controlled ruby project"
+     :test projectur-ruby-project-under-version-control-p
+     :tags-command "exuberant-ctags -e **/*.rb"
+     :ignored-dirs ("tmp" "vendor" "pkg"))
+    ("Generic version-controlled project"
      :test projectur-version-controlled-repo-p))
   "A list of plists describing project types.")
 
@@ -368,6 +369,21 @@ Supported version control systems: git, mercurial, subversion, cvs, darcs."
    (projectur-subversion-repo-p dir)
    (projectur-cvs-repo-p dir)
    (projectur-darcs-repo-p dir)))
+
+(defun projectur-ruby-project-under-version-control-p (dir)
+  "Returns non-nil if DIR is a root of version-controlled ruby project."
+  (and
+   (projectur-version-controlled-repo-p dir)
+   (or
+    (projectur-rails-app-p dir)
+    (projectur-ruby-gem-p dir)
+    (projectur-bundler-project-p dir)
+    (file-regular-p (expand-file-name "spec/spec_helper.rb" dir))
+    (file-regular-p (expand-file-name "test/test_helper.rb" dir))
+    (file-regular-p (expand-file-name "features/support/env.rb" dir))
+    (file-regular-p (expand-file-name ".rspec" dir))
+    (file-regular-p (expand-file-name ".rvmrc" dir))
+    (file-regular-p (expand-file-name ".rbenv-version" dir)))))
 
 (provide 'projectur)
 
