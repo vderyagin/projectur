@@ -30,7 +30,7 @@ With double prefix argument executes whole rspec suite of current project."
          (cond
            ((eq arg 1) 'at-point)
            ((eq arg 4) 'file)
-           ((eq arg 16) 'suite))))
+           ((>= arg 16) 'suite))))
     (projectur-rspec-sanity-check scope)
     (projectur-rspec-execute-specs scope)))
 
