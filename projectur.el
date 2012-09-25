@@ -33,10 +33,10 @@
   '(("Version-controlled ruby project"
      :test projectur-ruby-project-under-version-control-p
      :tags-command "exuberant-ctags -e **/*.rb"
-     :ignored-dirs ("tmp" "vendor" "pkg"))
+     :ignored-dirs ("tmp" "pkg"))
     ("Generic version-controlled project"
      :test projectur-version-controlled-repo-p))
-  "A list of plists describing project types.")
+  "A list with projects types descriptions.")
 
 (defvar projectur-ignored-dirs
   '(".hg" ".git" ".bzr" ".svn" ".rbx" "_darcs" "_MTN" "CVS" "RCS" "SCCS")
@@ -45,7 +45,7 @@
 
 (defvar projectur-ignored-files
   '("*.elc" "*.rbc" "*.py[co]" "*.a" "*.o" "*.so" "*.bin" "*.class"
-    "*.s[ac]ssc" "*.sqlite3" "TAGS" ".gitkeep")
+    "*.s[ac]ssc" "*.sqlite3" "TAGS" ".gitkeep" "*~")
   "List of wildcards, matching names of files, which will not be
   considered part of the project.")
 
