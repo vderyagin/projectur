@@ -217,9 +217,11 @@ buffer does not belong to any project"
   "Open file from current project."
   (let ((files (projectur-project-files project)))
     (find-file
-     (projectur-complete "Find file in project: " files
-                         (lambda (file)
-                           (file-relative-name file (projectur-project-root project)))))))
+     (projectur-complete
+      "Find file in project: " files
+      (lambda (file)
+        (file-relative-name file
+                            (projectur-project-root project)))))))
 
 ;;;###autoload
 (projectur-define-command projectur-rgrep
