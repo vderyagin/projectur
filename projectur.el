@@ -308,7 +308,7 @@ project."
      (if project
          (file-relative-name buffer-file-name
                              (projectur-project-root project))
-         (abbrev-file-name buffer-file-name)))))
+         (abbreviate-file-name buffer-file-name)))))
 
 (defalias 'projectur-hg-repo-p 'projectur-mercurial-repo-p)
 (defalias 'projectur-svn-repo-p 'projectur-subversion-repo-p)
