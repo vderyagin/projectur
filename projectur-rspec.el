@@ -1,4 +1,4 @@
-(require 'current-project)
+(require 'projectur)
 
 (define-compilation-mode rspec-mode "Rspec" "Mode for executing Rspec specs.")
 
@@ -10,29 +10,47 @@
             (let ((inhibit-read-only t))
               (ansi-color-apply-on-region (point-min) (point-max)))))
 
+(defvar projectur-rspec-use-bundler nil
+  "Non-nil means use bundler for executing rspec whenever available.")
+
+(defun projectur-rspec-default-command ()
+  "Returns default command for rspec execution"
+  (if (and projectur-rspec-use-bundler
+           (executable-find "bundle"))
+      '("bundle" "exec" "rspec")
+      '("rspec")))
+
 ;;;###autoload
-(defun cpr-rspec (&optional arg)
+(defun projectur-rspec (&optional arg)
   "Without prefix argument executes spec found at current point position.
 With single prefix argument executes all spec found in current file.
 With double prefix argument executes whole rspec suite of current project."
   (interactive "p")
-  (cond
-    ((eq arg 1)
-     (cpr-rspec-execute-specs 'at-point))
-    ((eq arg 4)
-     (cpr-rspec-execute-specs 'file))
-    ((eq arg 16)
-     (cpr-rspec-execute-specs 'suite))))
+  (let ((scope
+         (cond
+           ((eq arg 1) 'at-point)
+           ((eq arg 4) 'file)
+           ((eq arg 16) 'suite))))
+    (projectur-rspec-sanity-check scope)
+    (projectur-rspec-execute-specs scope)))
 
-(defun cpr-rspec-execute-specs (scope)
+(defun projectur-rspec-sanity-check (scope)
+  "Check if current location is appropriate for running specs within SCOPE."
+  (when (memq scope '(at-point file))
+    (unless (and
+             buffer-file-name
+             (string-match-p "._spec\.rb" buffer-file-name))
+      (error "Current buffer does not seem to be visiting RSpec spec file"))))
+
+(defun projectur-rspec-execute-specs (scope)
   "Executes rspec examples selected according to SCOPE.
 if SCOPE = 'at-point - example found at current point position.
 if SCOPE = 'file - examples found in currently visited file.
 if SCOPE = 'suite - whole rspec suite."
-  (with-cpr-project
+  (projectur-with-project (projectur-current-project)
     (let ((file (file-relative-name buffer-file-name default-directory))
           (line-number (line-number-at-pos))
-          (command '("rspec")))
+          (command (projectur-rspec-default-command)))
 
       (when (eq scope 'at-point)
         (add-to-list 'command "--line_number" 'append)
@@ -43,8 +61,8 @@ if SCOPE = 'suite - whole rspec suite."
 
       (setq command (mapconcat 'identity command " "))
 
-      (cpr-save)
+      (projectur-save)
 
       (compilation-start command 'rspec-mode))))
 
-(provide 'current-project-rspec)
+(provide 'projectur-rspec)
