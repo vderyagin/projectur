@@ -29,13 +29,18 @@
   (setq projectur-history
         (loop
            for project in projectur-history
-           if (projectur-project-valid-p project)
-           collect project)))
+           for root = (projectur-project-root project)
+           if (and
+               (projectur-project-valid-p project)
+               (not (member root seen-roots)))
+           collect project into projects and collect root into seen-roots
+           finally return projects)))
 
 (defun projectur-history-add (project)
   "Adds PROJECT to `projectur-history'."
   (add-to-list 'projectur-history project)
   (projectur-history-cleanup))
+
 
 (defun projectur-project-valid-p (project)
   "Returns non-nil if PROJECT is valid, nil otherwise."
@@ -73,10 +78,10 @@ buffer does not belong to any project"
      return (cons (file-name-as-directory root)
                   (cdr project-type))))
 
-(defun projectur-choose-project-from-history ()
+(defun projectur-select-project-from-history ()
   "Select single project from `projectur-history'."
   (projectur-complete
-   "Choose project:" projectur-history
+   "Select project: " projectur-history
    (lambda (project)
      (let* ((root (abbreviate-file-name
                    (projectur-project-root project)))
@@ -101,33 +106,6 @@ buffer does not belong to any project"
   "Return list of wildcards of ignored files for PROJECT."
   (plist-get (cdr project) :ignored-files))
 
-(defmacro projectur-with-project (project &rest body)
-  "execute BODY with `default-directory' bound to PROJECT root directory."
-  (declare (indent 1))
-  `(let ((default-directory (projectur-project-root ,project)))
-     ,@body))
-
-(defmacro projectur-define-command (command-name docstring &rest body)
-  "Define command COMMAND_NAME to be executed in"
-  (declare (indent 1))
-  `(defun ,command-name (&optional choose-project)
-     ,(concat
-       docstring
-       "\nIf called with prefix argument or current buffer does"
-       "\nnot belong to any project, ask to choose project from list"
-       "\nand use it as context for executing BODY."
-       "\n"
-       "\nin BODY you can use variable `project' which refers to the"
-       "\nproject in context of which command is being executed.")
-     (interactive "P")
-     (let* ((current-project (projectur-current-project))
-            (project (if (and (not choose-project)
-                              current-project)
-                         current-project
-                         (projectur-choose-project-from-history))))
-       (projectur-with-project project
-         ,@body))))
-
 (defun projectur-find-cmd (project)
   "Find file in project."
   (let ((ignored-dirs (append projectur-ignored-dirs
@@ -149,10 +127,63 @@ buffer does not belong to any project"
              (shell-command-to-string command)
              "\0"))))
 
+(defun projectur-buffers (project)
+  "Returns list of buffers, visiting files, belonging to current project."
+  (loop
+     for buf in (buffer-list)
+     if (projectur-buffer-in-project-p buf project)
+     collect buf))
+
+(defun projectur-buffer-in-project-p (buffer-or-name project)
+  "Returns non-nil if BUFFER-OR-NAME is visiting a file, belonging to current project"
+  (let ((buf (get-buffer buffer-or-name))
+        (root (projectur-project-root project)))
+    (with-current-buffer buf
+      (and
+       buffer-file-name
+       (string-prefix-p root buffer-file-name)))))
+
+(defmacro projectur-with-project (project &rest body)
+  "execute BODY with `default-directory' bound to PROJECT root directory."
+  (declare (indent 1))
+  `(let ((default-directory (projectur-project-root ,project)))
+     ,@body))
+
+;;;###autoload
+(defmacro projectur-define-command (command-name docstring &rest body)
+  "Define command COMMAND_NAME to be executed in"
+  (declare (indent 1))
+  `(defun ,command-name (&optional choose-project)
+     ,(concat
+       docstring
+       "\nIf called with prefix argument or current buffer does"
+       "\nnot belong to any project, ask to choose project from list"
+       "\nand use it as context for executing BODY."
+       "\n"
+       "\nin BODY you can use variable `project' which refers to the"
+       "\nproject in context of which command is being executed.")
+     (interactive "P")
+     (let* ((current-project (projectur-current-project))
+            (project (if (and (not choose-project)
+                              current-project)
+                         current-project
+                         (projectur-select-project-from-history))))
+       (projectur-with-project project
+         ,@body))))
+
+;;;###autoload
+(font-lock-add-keywords
+ 'emacs-lisp-mode
+ '(("(\\(projectur-define-command\\) +\\([^ ]+\\)"
+    (1 'font-lock-keyword-face)
+    (2 'font-lock-function-name-face))))
+
+;;;###autoload
 (projectur-define-command projectur-goto-root
   "Open root directory of current project."
   (find-file default-directory))
 
+;;;###autoload
 (projectur-define-command projectur-find-file
   "Open file from current project."
   (let ((files (projectur-project-files project)))
@@ -161,13 +192,62 @@ buffer does not belong to any project"
                          (lambda (file)
                            (file-relative-name file (projectur-project-root project)))))))
 
+;;;###autoload
 (projectur-define-command projectur-rgrep
   "Run `rgrep' command in context of the current project root directory."
   (call-interactively 'rgrep))
 
-(projectur-define-command cpr-execute-shell-command ()
+;;;###autoload
+(projectur-define-command projectur-execute-shell-command
   "Execute shell command in context of the current project root directory."
   (call-interactively 'shell-command))
+
+;;;###autoload
+(projectur-define-command projectur-ack
+  "Run `ack' command (if available) in context of the current project root directory."
+  (if (fboundp 'ack)
+      (call-interactively 'ack)
+      (error "You need `ack' command installed in order to use this functionality")))
+
+;;;###autoload
+(projectur-define-command projectur-delete-from-history
+  "Delete current project from `projectur-history'"
+  (setq projectur-history
+        (delete project projectur-history)))
+
+;;;###autoload
+(projectur-define-command projectur-version-control
+  "Open appropriate version control interface for current project."
+  (cond
+    ((and
+      (projectur-git-repo-p default-directory)
+      (fboundp 'magit-status))
+     (magit-status default-directory))
+    ((and
+      (projectur-mercurial-repo-p default-directory)
+      (fboundp 'ahg-status))
+     (ahg-status default-directory))
+    (t
+     (vc-dir default-directory nil))))
+
+;;;###autoload
+(projectur-define-command projectur-generate-tags
+  "Generate TAGS file for current project."
+  (let ((command (format "exuberant-ctags -e -R %s"
+                         (shell-quote-argument default-directory))))
+    (shell-command
+     (read-string "Generate TAGS like this: "
+                  command nil command))
+    (setq tags-file-name (expand-file-name "TAGS"))))
+
+;;;###autoload
+(projectur-define-command projectur-save
+  "Save all opened buffers that belong to current project."
+  (mapc
+   (lambda (buf)
+     (with-current-buffer buf
+       (save-buffer)))
+   (projectur-buffers project)))
 
 (defun* projectur-complete (prompt choices &optional (display-fn 'identity))
   "Select one of CHOICES, with PROMPT, use DISPLAY-FN for display if provided,
@@ -181,15 +261,6 @@ buffer does not belong to any project"
          (chosen
           (ido-completing-read prompt display-choices)))
     (cdr (assoc chosen results-map))))
-
-(font-lock-add-keywords
- 'emacs-lisp-mode
- '(("(\\(projectur-define-command\\) +\\([^ ]+\\)"
-    (1 'font-lock-keyword-face)
-    (2 'font-lock-function-name-face))))
-
-
-
 
 (defalias 'projectur-hg-repo-p 'projectur-mercurial-repo-p)
 (defalias 'projectur-svn-repo-p 'projectur-subversion-repo-p)
