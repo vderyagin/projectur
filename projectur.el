@@ -134,18 +134,18 @@ buffer does not belong to any project"
 
 (defun projectur-project-ignored-dirs (project)
   "Return list of ignored directories for PROJECT."
-  (plist-get (cdr project) :ignored-dirs))
+  (append projectur-ignored-dirs
+          (plist-get (cdr project) :ignored-dirs)))
 
 (defun projectur-project-ignored-files (project)
   "Return list of wildcards of ignored files for PROJECT."
-  (plist-get (cdr project) :ignored-files))
+  (append projectur-ignored-files
+          (plist-get (cdr project) :ignored-files)))
 
 (defun projectur-find-cmd (project)
   "Find file in project."
-  (let ((ignored-dirs (append projectur-ignored-dirs
-                              (projectur-project-ignored-dirs project)))
-        (ignored-files (append projectur-ignored-files
-                               (projectur-project-ignored-files project))))
+  (let ((ignored-dirs (projectur-project-ignored-dirs project))
+        (ignored-files (projectur-project-ignored-files project)))
     (projectur-with-project project
       (find-cmd
        `(prune (name ,@ignored-dirs))
