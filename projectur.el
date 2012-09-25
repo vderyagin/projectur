@@ -49,8 +49,7 @@
   "List of wildcards, matching names of files, which will not be
   considered part of the project.")
 
-(defvar projectur-history nil
-  "List of visited projects.")
+(defvar projectur-history nil "List of visited projects.")
 
 (defvar projectur-tags-command "exuberant-ctags -e --recurse .")
 
@@ -89,14 +88,14 @@ buffer does not belong to any project"
 
 (defun projectur-project-get ()
   "Return current project or nil if current buffer does not belong to any."
-    (loop
-       with project
-       with dir = default-directory
-       until (string= dir "/")
-       thereis project
-       do
-         (setq project (projectur-project-with-root dir)
-               dir  (expand-file-name ".." dir))))
+  (loop
+     with project
+     with dir = default-directory
+     until (string= dir "/")
+     thereis project
+     do
+       (setq project (projectur-project-with-root dir)
+             dir (expand-file-name ".." dir))))
 
 (defun projectur-project-with-root (root)
   "Return project with root in ROOT, nil if ROOT is not a root of any project."
