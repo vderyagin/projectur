@@ -207,12 +207,10 @@ buffer does not belong to any project"
     (1 'font-lock-keyword-face)
     (2 'font-lock-function-name-face))))
 
-;;;###autoload
 (projectur-define-command projectur-goto-root
   "Open root directory of current project."
   (find-file default-directory))
 
-;;;###autoload
 (projectur-define-command projectur-find-file
   "Open file from current project."
   (let ((files (projectur-project-files project)))
@@ -223,30 +221,25 @@ buffer does not belong to any project"
         (file-relative-name file
                             (projectur-project-root project)))))))
 
-;;;###autoload
 (projectur-define-command projectur-rgrep
   "Run `rgrep' command in context of the current project root directory."
   (call-interactively 'rgrep))
 
-;;;###autoload
 (projectur-define-command projectur-execute-shell-command
   "Execute shell command in context of the current project root directory."
   (call-interactively 'shell-command))
 
-;;;###autoload
 (projectur-define-command projectur-ack
   "Run `ack' command (if available) in context of the current project root directory."
   (if (fboundp 'ack)
       (call-interactively 'ack)
       (error "You need `ack' command installed in order to use this functionality")))
 
-;;;###autoload
 (projectur-define-command projectur-delete-from-history
   "Delete current project from `projectur-history'"
   (setq projectur-history
         (delete project projectur-history)))
 
-;;;###autoload
 (projectur-define-command projectur-version-control
   "Open appropriate version control interface for current project."
   (cond
@@ -261,7 +254,6 @@ buffer does not belong to any project"
     (t
      (vc-dir default-directory nil))))
 
-;;;###autoload
 (projectur-define-command projectur-generate-tags
   "Generate TAGS file for current project."
   (let ((command (format "exuberant-ctags -e -R %s"
@@ -271,7 +263,6 @@ buffer does not belong to any project"
                   command nil command))
     (setq tags-file-name (expand-file-name "TAGS"))))
 
-;;;###autoload
 (projectur-define-command projectur-save
   "Save all opened buffers that belong to current project."
   (mapc
