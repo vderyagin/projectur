@@ -284,6 +284,21 @@ buffer does not belong to any project"
           (ido-completing-read prompt display-choices)))
     (cdr (assoc chosen results-map))))
 
+(defun projectur-show-current-file ()
+  "If current buffer is visitin a file, show path of it relative
+to its project root or absolute path if it does not belong to any
+project."
+  (interactive)
+  (unless buffer-file-name
+    (error "Current buffer does not belong to any project"))
+  (let ((project (projectur-current-project)))
+    (message
+     "%s"
+     (if project
+         (file-relative-name buffer-file-name
+                             (projectur-project-root project))
+         (abbrev-file-name buffer-file-name)))))
+
 (defalias 'projectur-hg-repo-p 'projectur-mercurial-repo-p)
 (defalias 'projectur-svn-repo-p 'projectur-subversion-repo-p)
 
