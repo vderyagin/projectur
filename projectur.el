@@ -267,6 +267,14 @@ Return nil if unsuccessful."
     (2 'font-lock-function-name-face))))
 
 ;;;###autoload
+(defun projectur-set-project-root (dir)
+  "Set DIR as root of current project."
+  (interactive "DProject root: ")
+  (projectur-history-add
+   (cons (file-name-as-directory (expand-file-name dir))
+         '(:test nil))))
+
+;;;###autoload
 (defun projectur-delete-from-history ()
   "Select project to delete from `projectur-history'."
   (interactive)
