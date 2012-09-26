@@ -85,12 +85,13 @@ Executed in context of projects root directory.")
 
 (defun projectur-current-project ()
   "Return project current buffer belongs to, nil if none."
-  (let ((project (projectur-project-get)))
+  (let ((project (projectur-project-try-fetch)))
     (projectur-history-add project)
     project))
 
-(defun projectur-project-get ()
-  "Return current project or nil if current buffer does not belong to any."
+(defun projectur-project-try-fetch ()
+  "Make attempt to fetch current project by going up filesystem tree.
+Return nil if unsuccessful."
   (loop
      with project
      with dir = default-directory
