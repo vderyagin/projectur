@@ -203,11 +203,11 @@ Executed in context of projects root directory.")
        "\nin BODY you can use variable `project' which refers to the"
        "\nproject in context of which command is being executed.")
      (interactive "P")
-     (let* ((current-project (projectur-current-project))
-            (project (if (and (not choose-project)
-                              current-project)
-                         current-project
-                         (projectur-select-project-from-history))))
+     (let (project)
+       (unless choose-project
+         (setq project (projectur-current-project)))
+       (unless project
+         (setq project (projectur-select-project-from-history)))
        (projectur-with-project project
          ,@body))))
 
