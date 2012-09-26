@@ -68,8 +68,34 @@ Executed in context of projects root directory.")
 
 (defun projectur-history-add (project)
   "Add PROJECT to `projectur-history'."
-  (add-to-list 'projectur-history project)
-  (projectur-history-cleanup))
+  (let ((root (projectur-project-root project))
+        (conflicting-root (projectur-conflicting-root-from-history project)))
+    (when conflicting-root
+      (error (format
+              (concat "Can not add project with root in \"%s\" "
+                      "because it conflicts with other project "
+                      "with root in \"%s\"")
+              (abbreviate-file-name root)
+              (abbreviate-file-name conflicting-root))))
+
+    (add-to-list 'projectur-history project)
+    (projectur-history-cleanup)))
+
+(defun projectur-conflicting-root-from-history (project)
+  "Return root of project from `projectur-history' PROJECT conflicts with.
+Return nil if no conflicts detected. Conflict is understood as
+parent-directory/subdirectory relationships between root of PROJECT
+ and root of some other project from history.
+
+Special case is when root of PROJECT matches root of project from history,
+this is not considered a conflict, duplication is getting dealt with by
+`projectur-history-cleanup'."
+  (loop
+     with root = (projectur-project-root project)
+     for other-root in (mapcar 'projectur-project-root projectur-history)
+     if (or (projectur-subdirectory-p root other-root)
+            (projectur-subdirectory-p other-root root))
+     return other-root))
 
 (defun projectur-project-valid-p (project)
   "Return non-nil if PROJECT is valid, nil otherwise."
