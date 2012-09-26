@@ -45,7 +45,7 @@
 
 (defvar projectur-ignored-files
   '("*.elc" "*.rbc" "*.py[co]" "*.a" "*.o" "*.so" "*.bin" "*.class"
-    "*.s[ac]ssc" "*.sqlite3" "TAGS" ".gitkeep" "*~")
+    "*.s[ac]ssc" "*.sqlite3" "TAGS" ".gitkeep" "*~" "#*#")
   "List of wildcards, matching names of files, which will be excluded from any project.")
 
 (defvar projectur-history nil "List of visited projects.")
