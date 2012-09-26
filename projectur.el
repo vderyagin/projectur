@@ -404,4 +404,5 @@ Supported version control systems: git, mercurial, subversion, cvs, darcs."
 
 ;; Local Variables:
 ;; lexical-binding: t
+;; coding: us-ascii
 ;; End:

@@ -77,4 +77,5 @@ if SCOPE = 'suite - whole rspec suite."
 
 ;; Local Variables:
 ;; lexical-binding: t
+;; coding: us-ascii
 ;; End:
