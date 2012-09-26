@@ -78,8 +78,11 @@ Executed in context of projects root directory.")
         (test (plist-get (cdr project) :test)))
     (and
      (stringp root)
-     (functionp test)
-     (funcall test root))))
+     (file-directory-p root)
+     (if test
+         (and (functionp test)
+              (funcall test root))
+         t))))
 
 (defun projectur-current-project ()
   "Return project for the current buffer, or nil if current
