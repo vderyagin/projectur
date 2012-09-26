@@ -1,4 +1,3 @@
-;;; -*- lexical-binding: t -*-
 
 (require 'projectur)
 
@@ -68,3 +67,7 @@ if SCOPE = 'suite - whole rspec suite."
       (compilation-start command 'rspec-mode))))
 
 (provide 'projectur-rspec)
+
+;; Local Variables:
+;; lexical-binding: t
+;; End:
