@@ -1,5 +1,5 @@
-;;; -*- lexical-binding: t -*-
 ;;; projectur.el --- Support for projects in Emacs
+;;; -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2012 Victor Deryagin
 
@@ -24,6 +24,8 @@
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
 ;; Floor, Boston, MA 02110-1301, USA.
 
+;;; Commentary:
+
 ;;; Code:
 
 (eval-when-compile
@@ -40,14 +42,12 @@
 
 (defvar projectur-ignored-dirs
   '(".hg" ".git" ".bzr" ".svn" ".rbx" "_darcs" "_MTN" "CVS" "RCS" "SCCS")
-  "List of names of directories, content of which will not be
-considered part of the project.")
+  "List of names of directories, content of which will be excluded from any project.")
 
 (defvar projectur-ignored-files
   '("*.elc" "*.rbc" "*.py[co]" "*.a" "*.o" "*.so" "*.bin" "*.class"
     "*.s[ac]ssc" "*.sqlite3" "TAGS" ".gitkeep" "*~")
-  "List of wildcards, matching names of files, which will not be
-considered part of the project.")
+  "List of wildcards, matching names of files, which will be excluded from any project.")
 
 (defvar projectur-history nil "List of visited projects.")
 
@@ -56,6 +56,7 @@ considered part of the project.")
 Executed in context of projects root directory.")
 
 (defun projectur-history-cleanup ()
+  "Delete invalid and duplicate projects from `projectur-history'."
   (setq projectur-history
         (loop
            for project in projectur-history
@@ -67,13 +68,13 @@ Executed in context of projects root directory.")
            finally return projects)))
 
 (defun projectur-history-add (project)
-  "Adds PROJECT to `projectur-history'."
+  "Add PROJECT to `projectur-history'."
   (add-to-list 'projectur-history project)
   (projectur-history-cleanup))
 
 
 (defun projectur-project-valid-p (project)
-  "Returns non-nil if PROJECT is valid, nil otherwise."
+  "Return non-nil if PROJECT is valid, nil otherwise."
   (let ((root (car project))
         (test (plist-get (cdr project) :test)))
     (and
@@ -85,8 +86,7 @@ Executed in context of projects root directory.")
          t))))
 
 (defun projectur-current-project ()
-  "Return project for the current buffer, or nil if current
-buffer does not belong to any project"
+  "Return project current buffer belongs to, nil if none."
   (let ((project (projectur-project-get)))
     (projectur-history-add project)
     project))
@@ -148,7 +148,7 @@ buffer does not belong to any project"
           (plist-get (cdr project) :ignored-files)))
 
 (defun projectur-find-cmd (project)
-  "Find file in project."
+  "Find file in PROJECT."
   (let ((ignored-dirs (projectur-project-ignored-dirs project))
         (ignored-files (projectur-project-ignored-files project)))
     (projectur-with-project project
@@ -167,14 +167,14 @@ buffer does not belong to any project"
              "\0"))))
 
 (defun projectur-buffers (project)
-  "Returns list of buffers, visiting files, belonging to current project."
+  "Return list of buffers, visiting files, belonging to PROJECT."
   (loop
      for buf in (buffer-list)
      if (projectur-buffer-in-project-p buf project)
      collect buf))
 
 (defun projectur-buffer-in-project-p (buffer-or-name project)
-  "Returns non-nil if BUFFER-OR-NAME is visiting a file, belonging to current project"
+  "Return non-nil if BUFFER-OR-NAME is visiting a file, belonging to PROJECT."
   (let ((buf (get-buffer buffer-or-name))
         (root (projectur-project-root project)))
     (with-current-buffer buf
@@ -183,7 +183,7 @@ buffer does not belong to any project"
        (string-prefix-p root buffer-file-name)))))
 
 (defmacro projectur-with-project (project &rest body)
-  "Execute BODY with `default-directory' bound to PROJECT root directory."
+  "With `default-directory' bound to PROJECT root directory execute BODY."
   (declare (indent 1))
   `(progn
      (unless (projectur-project-valid-p ,project)
@@ -193,7 +193,7 @@ buffer does not belong to any project"
 
 ;;;###autoload
 (defmacro projectur-define-command (command-name docstring &rest body)
-  "Define command COMMAND_NAME to be executed in"
+  "Define COMMAND-NAME with DOCSTRING and BODY to be executed in context of project."
   (declare (indent 1))
   `(defun ,command-name (&optional choose-project)
      ,(concat
@@ -299,9 +299,9 @@ buffer does not belong to any project"
     (cdr (assoc chosen results-map))))
 
 (defun projectur-show-current-file ()
-  "If current buffer is visitin a file, show path of it relative
-to its project root or absolute path if it does not belong to any
-project."
+  "Show path of current file relative to its project root in minibuffer.
+Show absolute path if current file does not belong to any project.
+Display error if current buffer is not visiting a file."
   (interactive)
   (unless buffer-file-name
     (error "Current buffer does not belong to any project"))
@@ -317,57 +317,57 @@ project."
 (defalias 'projectur-svn-repo-p 'projectur-subversion-repo-p)
 
 (defun projectur-git-repo-p (dir)
-  "Returns non-nil if DIR is a root of git repository, nil otherwise."
+  "Return non-nil if DIR is a root of git repository, nil otherwise."
   (file-directory-p
    (expand-file-name ".git" dir)))
 
 (defun projectur-mercurial-repo-p (dir)
-  "Returns non-nil if DIR is a root of mercurial repository, nil otherwise."
+  "Return non-nil if DIR is a root of mercurial repository, nil otherwise."
   (file-directory-p
    (expand-file-name ".hg" dir)))
 
 (defun projectur-subversion-repo-p (dir)
-  "Returns non-nil if DIR is a root of subversion repository, nil otherwise."
+  "Return non-nil if DIR is a root of subversion repository, nil otherwise."
   (and
    (file-directory-p (expand-file-name ".svn" dir))
    (not
     (file-directory-p (expand-file-name "../.svn" dir)))))
 
 (defun projectur-cvs-repo-p (dir)
-  "Returns non-nil if DIR is a root of CVS repository, nil otherwise."
+  "Return non-nil if DIR is a root of CVS repository, nil otherwise."
   (and
    (file-directory-p (expand-file-name "CVS" dir))
    (not
     (file-directory-p (expand-file-name "../CVS" dir)))))
 
 (defun projectur-darcs-repo-p (dir)
-  "Returns non-nil if DIR is a root of Darcs repository, nil otherwise."
+  "Return non-nil if DIR is a root of Darcs repository, nil otherwise."
   (file-directory-p
    (expand-file-name "_darcs" dir)))
 
 (defun projectur-ruby-gem-p (dir)
-  "Returns non-nil if DIR is a root of ruby gem source tree, nil otherwise."
+  "Return non-nil if DIR is a root of ruby gem source tree, nil otherwise."
   (file-expand-wildcards
    (expand-file-name "*.gemspec" dir)))
 
 (defun projectur-rails-app-p (dir)
-  "Returns non-nil if DIR is a root of ruby-on-rails application, nil otherwise."
+  "Return non-nil if DIR is a root of ruby-on-rails application, nil otherwise."
   (file-regular-p
    (expand-file-name "script/rails" dir)))
 
 (defun projectur-rake-project-p (dir)
-  "Returns non-nil if DIR is a root of project using rake, nil otherwise."
+  "Return non-nil if DIR is a root of project using rake, nil otherwise."
   (loop
      for rakefile in '("rakefile" "Rakefile" "rakefile.rb" "Rakefile.rb")
      thereis (file-regular-p (expand-file-name rakefile dir))))
 
 (defun projectur-bundler-project-p (dir)
-  "Returns non-nil if DIR is a root of project using bundler, nil otherwise."
+  "Return non-nil if DIR is a root of project using bundler, nil otherwise."
   (file-regular-p
    (expand-file-name "Gemfile" dir)))
 
 (defun projectur-version-controlled-repo-p (dir)
-  "Returns non-nil if DIR is a root of version-controlled project, nil otherwise.
+  "Return non-nil if DIR is a root of version-controlled project, nil otherwise.
 Supported version control systems: git, mercurial, subversion, cvs, darcs."
   (or
    (projectur-git-repo-p dir)
@@ -377,7 +377,7 @@ Supported version control systems: git, mercurial, subversion, cvs, darcs."
    (projectur-darcs-repo-p dir)))
 
 (defun projectur-ruby-project-under-version-control-p (dir)
-  "Returns non-nil if DIR is a root of version-controlled ruby project."
+  "Return non-nil if DIR is a root of version-controlled ruby project."
   (and
    (projectur-version-controlled-repo-p dir)
    (or
