@@ -109,10 +109,10 @@ Executed in context of projects root directory.")
      return (cons (file-name-as-directory root)
                   (cdr project-type))))
 
-(defun projectur-select-project-from-history ()
+(defun* projectur-select-project-from-history (&optional (prompt "Select project: "))
   "Select single project from `projectur-history'."
   (projectur-complete
-   "Select project: " projectur-history
+   prompt projectur-history
    (lambda (project)
      (let* ((root (abbreviate-file-name
                    (projectur-project-root project)))
@@ -218,6 +218,16 @@ Executed in context of projects root directory.")
     (1 'font-lock-keyword-face)
     (2 'font-lock-function-name-face))))
 
+;;;###autoload
+(defun projectur-delete-from-history ()
+  "Select project to delete from `projectur-history'."
+  (interactive)
+  (let ((project (projectur-select-project-from-history "Delete project: ")))
+    (setq projectur-history
+          (delete project projectur-history))
+    (message "Project \"%s\" deleted from history."
+             (abbreviate-file-name (projectur-project-root project)))))
+
 ;;;###autoload (autoload 'projectur-goto-root "projectur" nil t)
 (projectur-define-command projectur-goto-root
   "Open root directory of current project."
@@ -250,14 +260,6 @@ Executed in context of projects root directory.")
   (if (fboundp 'ack)
       (call-interactively 'ack)
       (error "You need `ack' command installed in order to use this functionality")))
-
-;;;###autoload (autoload 'projectur-delete-from-history "projectur" nil t)
-(projectur-define-command projectur-delete-from-history
-  "Delete current project from `projectur-history'"
-  (setq projectur-history
-        (delete project projectur-history))
-  (message "Project \"%s\" deleted from history."
-           (abbreviate-file-name (projectur-project-root project))))
 
 ;;;###autoload (autoload 'projectur-version-control "projectur" nil t)
 (projectur-define-command projectur-version-control
