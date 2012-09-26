@@ -94,16 +94,18 @@ Executed in context of projects root directory.")
 (defun projectur-project-try-find-in-history ()
   "Make attempt to find current buffer's project in `projectur-history'.
 Return nil if unsuccessful."
-  (flet ((subdirectory-p (subdir dir)
-           (string-prefix-p
-            (file-name-as-directory dir)
-            (file-name-as-directory subdir))))
-    (loop
-       with current-directory = (file-name-as-directory default-directory)
-       for project in projectur-history
-       for root = (projectur-project-root project)
-       if (subdirectory-p current-directory root)
-         return project)))
+  (loop
+     with current-directory = (file-name-as-directory default-directory)
+     for project in projectur-history
+     for root = (projectur-project-root project)
+     if (projectur-subdirectory-p current-directory root)
+     return project))
+
+(defun projectur-subdirectory-p (subdir dir)
+  "Return non-nil if SUBDIR is a DIR or it's subdirectory, nil otherwise."
+  (string-prefix-p
+   (file-name-as-directory dir)
+   (file-name-as-directory subdir)))
 
 (defun projectur-project-try-fetch ()
   "Make attempt to fetch current project by going up filesystem tree.
