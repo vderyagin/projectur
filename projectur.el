@@ -98,14 +98,16 @@ Return nil if unsuccessful."
      with current-directory = (file-name-as-directory default-directory)
      for project in projectur-history
      for root = (projectur-project-root project)
-     if (projectur-subdirectory-p current-directory root)
+     if (or (string= current-directory root)
+            (projectur-subdirectory-p current-directory root))
      return project))
 
 (defun projectur-subdirectory-p (subdir dir)
-  "Return non-nil if SUBDIR is a DIR or it's subdirectory, nil otherwise."
-  (string-prefix-p
-   (file-name-as-directory dir)
-   (file-name-as-directory subdir)))
+  "Return non-nil if SUBDIR is a subdirectory of DIR, nil otherwise."
+  (let ((subdir (file-name-as-directory subdir))
+        (dir (file-name-as-directory dir)))
+    (and (> (length subdir) (length dir))
+         (string-prefix-p dir subdir))))
 
 (defun projectur-project-try-fetch ()
   "Make attempt to fetch current project by going up filesystem tree.
