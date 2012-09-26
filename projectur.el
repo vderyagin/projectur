@@ -71,7 +71,6 @@ Executed in context of projects root directory.")
   (add-to-list 'projectur-history project)
   (projectur-history-cleanup))
 
-
 (defun projectur-project-valid-p (project)
   "Return non-nil if PROJECT is valid, nil otherwise."
   (let ((root (car project))
@@ -219,10 +218,12 @@ Executed in context of projects root directory.")
     (1 'font-lock-keyword-face)
     (2 'font-lock-function-name-face))))
 
+;;;###autoload (autoload 'projectur-goto-root "projectur" nil t)
 (projectur-define-command projectur-goto-root
   "Open root directory of current project."
   (find-file default-directory))
 
+;;;###autoload (autoload 'projectur-find-file "projectur" nil t)
 (projectur-define-command projectur-find-file
   "Open file from current project."
   (let ((files (projectur-project-files project)))
@@ -233,20 +234,24 @@ Executed in context of projects root directory.")
         (file-relative-name file
                             (projectur-project-root project)))))))
 
+;;;###autoload (autoload 'projectur-rgrep "projectur" nil t)
 (projectur-define-command projectur-rgrep
   "Run `rgrep' command in context of the current project root directory."
   (call-interactively 'rgrep))
 
+;;;###autoload (autoload 'projectur-execute-shell-command "projectur" nil t)
 (projectur-define-command projectur-execute-shell-command
   "Execute shell command in context of the current project root directory."
   (call-interactively 'shell-command))
 
+;;;###autoload (autoload 'projectur-ack "projectur" nil t)
 (projectur-define-command projectur-ack
   "Run `ack' command (if available) in context of the current project root directory."
   (if (fboundp 'ack)
       (call-interactively 'ack)
       (error "You need `ack' command installed in order to use this functionality")))
 
+;;;###autoload (autoload 'projectur-delete-from-history "projectur" nil t)
 (projectur-define-command projectur-delete-from-history
   "Delete current project from `projectur-history'"
   (setq projectur-history
@@ -254,6 +259,7 @@ Executed in context of projects root directory.")
   (message "Project \"%s\" deleted from history."
            (abbreviate-file-name (projectur-project-root project))))
 
+;;;###autoload (autoload 'projectur-version-control "projectur" nil t)
 (projectur-define-command projectur-version-control
   "Open appropriate version control interface for current project."
   (cond
@@ -268,6 +274,7 @@ Executed in context of projects root directory.")
     (t
      (vc-dir default-directory nil))))
 
+;;;###autoload (autoload 'projectur-generate-tags "projectur" nil t)
 (projectur-define-command projectur-generate-tags
   "Generate TAGS file for current project."
   (let ((command (projectur-project-tags-command project)))
@@ -276,6 +283,7 @@ Executed in context of projects root directory.")
                   command nil command))
     (setq tags-file-name (expand-file-name "TAGS"))))
 
+;;;###autoload (autoload 'projectur-save "projectur" nil t)
 (projectur-define-command projectur-save
   "Save all opened buffers that belong to current project."
   (mapc
