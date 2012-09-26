@@ -1,3 +1,8 @@
+;;; projectur-rspec.el --- Run RSpec examples in project.
+
+;;; Commentary:
+
+;;; Code:
 
 (require 'projectur)
 
@@ -15,7 +20,7 @@
   "Non-nil means use bundler for executing rspec whenever available.")
 
 (defun projectur-rspec-default-command ()
-  "Returns default command for rspec execution"
+  "Return default command for rspec execution."
   (if (and projectur-rspec-use-bundler
            (executable-find "bundle"))
       '("bundle" "exec" "rspec")
@@ -23,9 +28,9 @@
 
 ;;;###autoload
 (defun projectur-rspec (&optional arg)
-  "Without prefix argument executes spec found at current point position.
-With single prefix argument executes all spec found in current file.
-With double prefix argument executes whole rspec suite of current project."
+  "Without ARG execute spec found at current point position.
+With single ARG executes all spec found in current file.
+With double ARG executes whole rspec suite of current project."
   (interactive "p")
   (let ((scope
          (cond
@@ -44,7 +49,7 @@ With double prefix argument executes whole rspec suite of current project."
       (error "Current buffer does not seem to be visiting RSpec spec file"))))
 
 (defun projectur-rspec-execute-specs (scope)
-  "Executes rspec examples selected according to SCOPE.
+  "Execute rspec examples selected according to SCOPE.
 if SCOPE = 'at-point - example found at current point position.
 if SCOPE = 'file - examples found in currently visited file.
 if SCOPE = 'suite - whole rspec suite."
@@ -67,6 +72,8 @@ if SCOPE = 'suite - whole rspec suite."
       (compilation-start command 'rspec-mode))))
 
 (provide 'projectur-rspec)
+
+;;; projectur-rspec.el ends here
 
 ;; Local Variables:
 ;; lexical-binding: t
