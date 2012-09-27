@@ -73,9 +73,7 @@ Executed in context of projects root directory.")
           (conflicting-root (projectur-conflicting-root-from-history project)))
       (when conflicting-root
         (error (format
-                (concat "Can not add project with root in \"%s\" "
-                        "because it conflicts with other project "
-                        "with root in \"%s\"")
+                "Failed to add project in '%s': conflict with other one in '%s'"
                 (abbreviate-file-name root)
                 (abbreviate-file-name conflicting-root))))
 
