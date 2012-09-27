@@ -68,7 +68,7 @@ if SCOPE = 'suite - whole rspec suite."
   "Mode for executing Rspec specs."
   (set (make-local-variable 'compilation-scroll-output) t)
   (add-hook 'compilation-start-hook
-            (lambda (process)
+            (lambda (_process)
               (goto-char (point-max)))
             nil
             'make-it-local)
