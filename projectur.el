@@ -282,6 +282,11 @@ Return nil if unsuccessful."
     (message "Project \"%s\" deleted from history."
              (abbreviate-file-name (projectur-project-root project)))))
 
+;;;###autoload (autoload 'projectur-kill-buffers "projectur" nil t)
+(projectur-define-command projectur-kill-buffers
+  "Kill all unmodified buffers visiting files, belonging to current project."
+  (mapc 'kill-buffer-if-not-modified (projectur-buffers project)))
+
 ;;;###autoload (autoload 'projectur-goto-root "projectur" nil t)
 (projectur-define-command projectur-goto-root
   "Open root directory of current project."
