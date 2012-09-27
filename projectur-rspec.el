@@ -6,15 +6,7 @@
 
 (require 'projectur)
 
-(define-compilation-mode rspec-mode "Rspec" "Mode for executing Rspec specs.")
-
-(setq rspec-scroll-output t)
-
-(add-hook 'rspec-start-hook (lambda () (goto-char (point-max))))
-(add-hook 'rspec-filter-hook
-          (defun rspec-colorize-buffer ()
-            (let ((inhibit-read-only t))
-              (ansi-color-apply-on-region (point-min) (point-max)))))
+(require 'compile)
 
 (defvar projectur-rspec-use-bundler nil
   "Non-nil means use bundler for executing rspec whenever available.")
@@ -70,6 +62,22 @@ if SCOPE = 'suite - whole rspec suite."
 
       (projectur-save)
       (compilation-start command 'rspec-mode))))
+
+
+(define-compilation-mode rspec-mode "Rspec"
+  "Mode for executing Rspec specs."
+  (set (make-local-variable 'compilation-scroll-output) t)
+  (add-hook 'compilation-start-hook
+            (lambda (process)
+              (goto-char (point-max)))
+            nil
+            'make-it-local)
+  (add-hook 'compilation-filter-hook
+            (lambda ()
+              (let ((inhibit-read-only t))
+                (ansi-color-apply-on-region (point-min) (point-max))))
+            nil
+            'make-it-local))
 
 (provide 'projectur-rspec)
 
