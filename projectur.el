@@ -292,13 +292,12 @@ Return nil if unsuccessful."
 ;;;###autoload (autoload 'projectur-find-file "projectur" nil t)
 (projectur-define-command projectur-find-file
   "Open file from current project."
-  (let ((files (projectur-project-files project)))
+  (let ((files (projectur-project-files project))
+        (root (projectur-project-root project)))
     (find-file
      (projectur-complete
       "Find file in project: " files
-      (lambda (file)
-        (file-relative-name file
-                            (projectur-project-root project)))))))
+      (lambda (file) (file-relative-name file root))))))
 
 ;;;###autoload (autoload 'projectur-rgrep "projectur" nil t)
 (projectur-define-command projectur-rgrep
