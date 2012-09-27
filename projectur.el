@@ -380,25 +380,23 @@ Display error if current buffer is not visiting a file."
                              (projectur-project-root project))
          (abbreviate-file-name buffer-file-name)))))
 
-(defalias 'projectur-hg-repo-p 'projectur-mercurial-repo-p)
-(defalias 'projectur-svn-repo-p 'projectur-subversion-repo-p)
 
 (defun projectur-git-repo-p (dir)
   "Return non-nil if DIR is a root of git repository, nil otherwise."
-  (file-directory-p
-   (expand-file-name ".git" dir)))
+  (file-directory-p (expand-file-name ".git" dir)))
 
 (defun projectur-mercurial-repo-p (dir)
   "Return non-nil if DIR is a root of mercurial repository, nil otherwise."
-  (file-directory-p
-   (expand-file-name ".hg" dir)))
+  (file-directory-p (expand-file-name ".hg" dir)))
+(defalias 'projectur-hg-repo-p 'projectur-mercurial-repo-p)
 
 (defun projectur-subversion-repo-p (dir)
   "Return non-nil if DIR is a root of subversion repository, nil otherwise."
   (and
    (file-directory-p (expand-file-name ".svn" dir))
-   (not
-    (file-directory-p (expand-file-name "../.svn" dir)))))
+   (not (file-directory-p (expand-file-name "../.svn" dir)))))
+(defalias 'projectur-svn-repo-p 'projectur-subversion-repo-p)
+
 (defun projectur-bazaar-repo-p (dir)
   "Return non-nil if DIR is a root of bazaar repository, nil otherwise."
   (file-directory-p (expand-file-name ".bzr" dir)))
@@ -408,23 +406,19 @@ Display error if current buffer is not visiting a file."
   "Return non-nil if DIR is a root of CVS repository, nil otherwise."
   (and
    (file-directory-p (expand-file-name "CVS" dir))
-   (not
-    (file-directory-p (expand-file-name "../CVS" dir)))))
+   (not (file-directory-p (expand-file-name "../CVS" dir)))))
 
 (defun projectur-darcs-repo-p (dir)
   "Return non-nil if DIR is a root of Darcs repository, nil otherwise."
-  (file-directory-p
-   (expand-file-name "_darcs" dir)))
+  (file-directory-p (expand-file-name "_darcs" dir)))
 
 (defun projectur-ruby-gem-p (dir)
   "Return non-nil if DIR is a root of ruby gem source tree, nil otherwise."
-  (file-expand-wildcards
-   (expand-file-name "*.gemspec" dir)))
+  (file-expand-wildcards (expand-file-name "*.gemspec" dir)))
 
 (defun projectur-rails-app-p (dir)
   "Return non-nil if DIR is a root of ruby-on-rails application, nil otherwise."
-  (file-regular-p
-   (expand-file-name "script/rails" dir)))
+  (file-regular-p (expand-file-name "script/rails" dir)))
 
 (defun projectur-rake-project-p (dir)
   "Return non-nil if DIR is a root of project using rake, nil otherwise."
@@ -434,8 +428,7 @@ Display error if current buffer is not visiting a file."
 
 (defun projectur-bundler-project-p (dir)
   "Return non-nil if DIR is a root of project using bundler, nil otherwise."
-  (file-regular-p
-   (expand-file-name "Gemfile" dir)))
+  (file-regular-p (expand-file-name "Gemfile" dir)))
 
 (defun projectur-version-controlled-repo-p (dir)
   "Return non-nil if DIR is a root of version-controlled project, nil otherwise.
