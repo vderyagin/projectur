@@ -194,7 +194,7 @@ Return nil if unsuccessful."
           (plist-get (cdr project) :ignored-files)))
 
 (defun projectur-find-cmd (project)
-  "Find file in PROJECT."
+  "Generate find(1) command for finding al relevant files withing PROJECT."
   (let ((ignored-dirs (projectur-project-ignored-dirs project))
         (ignored-files (projectur-project-ignored-files project)))
     (projectur-with-project project
