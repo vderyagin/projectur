@@ -364,7 +364,10 @@ Return nil if unsuccessful."
 (defun* projectur-complete (prompt choices &optional (display-fn 'identity))
   "Select one of CHOICES, with PROMPT, use DISPLAY-FN for display if provided,
 `identity' otherwise."
-  (let* ((results-map
+  (let* ((ido-decorations '("\n-> " "" "\n   " "\n   ..." "[" "]"
+                            " [No match]" " [Matched]" " [Not readable]"
+                            " [Too big]" " [Confirm]"))
+         (results-map
           (mapcar (lambda (choice)
                     (cons (funcall display-fn choice) choice))
                   choices))
