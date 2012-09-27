@@ -284,8 +284,17 @@ Return nil if unsuccessful."
 
 ;;;###autoload (autoload 'projectur-kill-buffers "projectur" nil t)
 (projectur-define-command projectur-kill-buffers
-  "Kill all unmodified buffers visiting files, belonging to current project."
-  (mapc 'kill-buffer-if-not-modified (projectur-buffers project)))
+  "Kill all buffers (even unsaved) visiting files from current project."
+  (let ((project-name (projectur-project-name project))
+        (buffers (projectur-buffers project)))
+    (if buffers
+        (when (yes-or-no-p
+               (format "About to kill all opened files from project '%s'. Are you sure? "
+                       project-name))
+          (mapc 'kill-buffer buffers))
+        (message
+         (format "Nothing to do, there are currently no opened files from project '%s'."
+                 project-name)))))
 
 ;;;###autoload (autoload 'projectur-goto-root "projectur" nil t)
 (projectur-define-command projectur-goto-root
