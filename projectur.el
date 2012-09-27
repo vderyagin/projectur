@@ -30,6 +30,8 @@
 (eval-when-compile
   (require 'cl))
 
+(require 'ido)
+
 (defvar projectur-project-types
   '(("Version-controlled ruby project"
      :test projectur-ruby-project-under-version-control-p
