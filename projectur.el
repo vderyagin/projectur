@@ -399,6 +399,10 @@ Display error if current buffer is not visiting a file."
    (file-directory-p (expand-file-name ".svn" dir))
    (not
     (file-directory-p (expand-file-name "../.svn" dir)))))
+(defun projectur-bazaar-repo-p (dir)
+  "Return non-nil if DIR is a root of bazaar repository, nil otherwise."
+  (file-directory-p (expand-file-name ".bzr" dir)))
+(defalias 'projectur-bzr-repo-p 'projectur-bazaar-repo-p)
 
 (defun projectur-cvs-repo-p (dir)
   "Return non-nil if DIR is a root of CVS repository, nil otherwise."
@@ -435,11 +439,12 @@ Display error if current buffer is not visiting a file."
 
 (defun projectur-version-controlled-repo-p (dir)
   "Return non-nil if DIR is a root of version-controlled project, nil otherwise.
-Supported version control systems: git, mercurial, subversion, cvs, darcs."
+Supported VCS: git, mercurial, subversion, bazaar, cvs, darcs."
   (or
    (projectur-git-repo-p dir)
    (projectur-mercurial-repo-p dir)
    (projectur-subversion-repo-p dir)
+   (projectur-bazaar-repo-p dir)
    (projectur-cvs-repo-p dir)
    (projectur-darcs-repo-p dir)))
 
