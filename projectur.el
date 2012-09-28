@@ -165,7 +165,7 @@ Return nil if unsuccessful."
      (let* ((root (abbreviate-file-name
                    (projectur-project-root project)))
             (name (projectur-project-name project)))
-       (format "%-25s (%s)" name root)))))
+       (format "%-30s (%s)" name root)))))
 
 (defun projectur-project-root (project)
   "Return root directory of PROJECT."
