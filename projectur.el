@@ -369,6 +369,7 @@ Return nil if unsuccessful."
   (let* ((ido-decorations '("\n-> " "" "\n   " "\n   ..." "[" "]"
                             " [No match]" " [Matched]" " [Not readable]"
                             " [Too big]" " [Confirm]"))
+         (ido-enable-flex-matching t)
          (results-map
           (mapcar (lambda (choice)
                     (cons (funcall display-fn choice) choice))
