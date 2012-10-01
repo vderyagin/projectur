@@ -363,6 +363,16 @@ Return nil if unsuccessful."
        (save-buffer)))
    (projectur-buffers project)))
 
+
+;;;###autoload (autoload 'projectur-revert "projectur" nil t)
+(projectur-define-command projectur-revert
+  "Revert all buffers visiting files from current project."
+  (mapc
+   (lambda (buf)
+     (with-current-buffer buf
+       (revert-buffer nil 'noconfirm 'preserve-modes)))
+   (projectur-buffers project)))
+
 (defun* projectur-complete (prompt choices &optional (display-fn 'identity))
   "Select one of CHOICES, with PROMPT, use DISPLAY-FN for display if provided,
 `identity' otherwise."
