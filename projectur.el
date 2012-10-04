@@ -294,11 +294,13 @@ Return nil if unsuccessful."
     (message "Project \"%s\" deleted from history."
              (abbreviate-file-name (projectur-project-root project)))))
 
-;;;###autoload (autoload 'projectur-kill-buffers "projectur" nil t)
-(projectur-define-command projectur-kill-buffers
+;;;###autoload
+(defun projectur-kill-buffers ()
   "Kill all buffers (even unsaved) visiting files from current project."
-  (let ((project-name (projectur-project-name project))
-        (buffers (projectur-buffers project)))
+  (interactive)
+  (let* ((project (projectur-current-project))
+         (project-name (projectur-project-name project))
+         (buffers (projectur-buffers project)))
     (if buffers
         (when (yes-or-no-p
                (format "About to kill all opened files from project '%s'. Are you sure? "
@@ -337,16 +339,20 @@ Return nil if unsuccessful."
   (projectur-with-current-project
     (call-interactively 'shell-command)))
 
-;;;###autoload (autoload 'projectur-ack "projectur" nil t)
-(projectur-define-command projectur-ack
+;;;###autoload
+(defun projectur-ack ()
   "Run `ack' command (if available) in context of the current project root directory."
-  (if (fboundp 'ack)
-      (call-interactively 'ack)
-      (error "You need `ack' command installed in order to use this functionality")))
+  (interactive)
+  (projectur-with-current-project
+    (if (fboundp 'ack)
+        (call-interactively 'ack)
+        (error "You need `ack' command installed in order to use this functionality")))  )
 
-;;;###autoload (autoload 'projectur-version-control "projectur" nil t)
-(projectur-define-command projectur-version-control
+;;;###autoload
+(defun projectur-version-control ()
   "Open appropriate version control interface for current project."
+  (interactive)
+  (projectur-with-current-project
   (cond
     ((and
       (projectur-git-repo-p default-directory)
@@ -357,35 +363,38 @@ Return nil if unsuccessful."
       (fboundp 'ahg-status))
      (ahg-status default-directory))
     (t
-     (vc-dir default-directory nil))))
+     (vc-dir default-directory nil)))))
 
-;;;###autoload (autoload 'projectur-generate-tags "projectur" nil t)
-(projectur-define-command projectur-generate-tags
+;;;###autoload
+(defun projectur-generate-tags ()
   "Generate TAGS file for current project."
-  (let ((command (projectur-project-tags-command project)))
-    (shell-command
-     (read-string "Generate TAGS like this: "
-                  command nil command))
-    (setq tags-file-name (expand-file-name "TAGS"))))
+  (interactive)
+  (projectur-with-current-project
+    (let ((command (projectur-project-tags-command project)))
+      (shell-command
+       (read-string "Generate TAGS like this: "
+                    command nil command))
+      (setq tags-file-name (expand-file-name "TAGS")))))
 
-;;;###autoload (autoload 'projectur-save "projectur" nil t)
-(projectur-define-command projectur-save
+;;;###autoload
+(defun projectur-save ()
   "Save all opened buffers that belong to current project."
+  (interactive)
   (mapc
    (lambda (buf)
      (with-current-buffer buf
        (save-buffer)))
-   (projectur-buffers project)))
+   (projectur-buffers (projectur-current-project))))
 
-
-;;;###autoload (autoload 'projectur-revert "projectur" nil t)
-(projectur-define-command projectur-revert
+;;;###autoload
+(defun projectur-revert ()
   "Revert all buffers visiting files from current project."
+  (interactive)
   (mapc
    (lambda (buf)
      (with-current-buffer buf
        (revert-buffer nil 'noconfirm 'preserve-modes)))
-   (projectur-buffers project)))
+   (projectur-buffers (projectur-current-project))))
 
 (defun* projectur-complete (prompt choices &optional (display-fn 'identity))
   "Select one of CHOICES, with PROMPT, use DISPLAY-FN for display if provided,
