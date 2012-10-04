@@ -323,10 +323,12 @@ Return nil if unsuccessful."
       "Find file in project: " files
       (lambda (file) (file-relative-name file root))))))
 
-;;;###autoload (autoload 'projectur-rgrep "projectur" nil t)
-(projectur-define-command projectur-rgrep
+;;;###autoload
+(defun projectur-rgrep ()
   "Run `rgrep' command in context of the current project root directory."
-  (call-interactively 'rgrep))
+  (interactive)
+  (projectur-with-current-project
+    (call-interactively 'rgrep)))
 
 ;;;###autoload (autoload 'projectur-execute-shell-command "projectur" nil t)
 (projectur-define-command projectur-execute-shell-command
