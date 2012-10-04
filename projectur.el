@@ -122,7 +122,7 @@ this is not considered a conflict, duplication is getting dealt with by
   "Make attempt to find current buffer's project in `projectur-history'.
 Return nil if unsuccessful."
   (loop
-     with current-directory = (file-name-as-directory default-directory)
+     with current-directory = (expand-file-name (file-name-as-directory default-directory))
      for project in projectur-history
      for root = (projectur-project-root project)
      if (or (string= current-directory root)
@@ -141,7 +141,7 @@ Return nil if unsuccessful."
 Return nil if unsuccessful."
   (loop
      with project
-     with dir = default-directory
+     with dir = (expand-file-name default-directory)
      until (string= dir "/")
      thereis project
      do
