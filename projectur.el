@@ -330,10 +330,12 @@ Return nil if unsuccessful."
   (projectur-with-current-project
     (call-interactively 'rgrep)))
 
-;;;###autoload (autoload 'projectur-execute-shell-command "projectur" nil t)
-(projectur-define-command projectur-execute-shell-command
+;;;###autoload
+(defun projectur-execute-shell-command ()
   "Execute shell command in context of the current project root directory."
-  (call-interactively 'shell-command))
+  (interactive)
+  (projectur-with-current-project
+    (call-interactively 'shell-command)))
 
 ;;;###autoload (autoload 'projectur-ack "projectur" nil t)
 (projectur-define-command projectur-ack
