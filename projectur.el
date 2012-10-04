@@ -248,33 +248,39 @@ Return nil if unsuccessful."
          ,@body))))
 
 ;;;###autoload
-(defmacro projectur-define-command (command-name docstring &rest body)
-  "Define COMMAND-NAME with DOCSTRING and BODY to be executed in context of project."
-  (declare (indent 1))
-  `(defun ,command-name (&optional choose-project)
-     ,(concat
-       docstring
-       "\nIf called with prefix argument or current buffer does"
-       "\nnot belong to any project, ask to choose project from list"
-       "\nand use it as context for executing BODY."
-       "\n"
-       "\nin BODY you can use variable `project' which refers to the"
-       "\nproject in context of which command is being executed.")
-     (interactive "P")
-     (let (project)
-       (unless choose-project
-         (setq project (projectur-current-project)))
-       (unless project
-         (setq project (projectur-select-project-from-history)))
-       (projectur-with-project project
-         ,@body))))
+(defun projectur-goto-root (choose-project)
+  "Open root directory of current project.
+If called with prefix argument or current buffer does not belong
+to any project, ask to choose project from list and use it as
+context for executing."
+  (interactive "P")
+  (let (project)
+    (unless choose-project
+      (setq project (projectur-current-project)))
+    (unless project
+      (setq project (projectur-select-project-from-history)))
+    (projectur-with-project project
+      (find-file default-directory))))
 
 ;;;###autoload
-(font-lock-add-keywords
- 'emacs-lisp-mode
- '(("(\\(projectur-define-command\\) +\\([^ ]+\\)"
-    (1 'font-lock-keyword-face)
-    (2 'font-lock-function-name-face))))
+(defun projectur-find-file (choose-project)
+  "Open file from current project.
+If called with prefix argument or current buffer does not belong
+to any project, ask to choose project from list and use it as
+context for executing."
+  (interactive "P")
+  (let (project)
+    (unless choose-project
+      (setq project (projectur-current-project)))
+    (unless project
+      (setq project (projectur-select-project-from-history)))
+    (projectur-with-project project
+      (let ((files (projectur-project-files project))
+            (root (projectur-project-root project)))
+        (find-file
+         (projectur-complete
+          "Find file in project: " files
+          (lambda (file) (file-relative-name file root))))))))
 
 ;;;###autoload
 (defun projectur-set-project-root (dir)
@@ -309,21 +315,6 @@ Return nil if unsuccessful."
         (message
          (format "Nothing to do, there are currently no opened files from project '%s'."
                  project-name)))))
-
-;;;###autoload (autoload 'projectur-goto-root "projectur" nil t)
-(projectur-define-command projectur-goto-root
-  "Open root directory of current project."
-  (find-file default-directory))
-
-;;;###autoload (autoload 'projectur-find-file "projectur" nil t)
-(projectur-define-command projectur-find-file
-  "Open file from current project."
-  (let ((files (projectur-project-files project))
-        (root (projectur-project-root project)))
-    (find-file
-     (projectur-complete
-      "Find file in project: " files
-      (lambda (file) (file-relative-name file root))))))
 
 ;;;###autoload
 (defun projectur-rgrep ()
