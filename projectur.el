@@ -237,6 +237,16 @@ Return nil if unsuccessful."
      (let ((default-directory (projectur-project-root ,project)))
        ,@body)))
 
+(defmacro projectur-with-current-project (&rest body)
+  "With `default-directory' bound to root directory of current project execute BODY."
+  (declare (indent 0))
+  `(progn
+     (let ((project (projectur-current-project)))
+       (unless (projectur-project-valid-p project)
+         (error "Current buffer does not seem to belong to any project"))
+       (let ((default-directory (projectur-project-root project)))
+         ,@body))))
+
 ;;;###autoload
 (defmacro projectur-define-command (command-name docstring &rest body)
   "Define COMMAND-NAME with DOCSTRING and BODY to be executed in context of project."
