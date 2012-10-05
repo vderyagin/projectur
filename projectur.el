@@ -244,7 +244,7 @@ Return nil if unsuccessful."
      (let ((project (projectur-current-project)))
        (unless (projectur-project-valid-p project)
          (error "Current buffer does not seem to belong to any project"))
-       (let ((default-directory (projectur-project-root project)))
+       (projectur-with-project project
          ,@body))))
 
 ;;;###autoload
