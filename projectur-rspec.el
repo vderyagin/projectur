@@ -14,7 +14,8 @@
 (defun projectur-rspec-default-command ()
   "Return default command for rspec execution."
   (if (and projectur-rspec-use-bundler
-           (executable-find "bundle"))
+           (executable-find "bundle")
+           (file-exists-p (expand-file-name "Gemfile" (projectur-project-root (projectur-current-project)))))
       '("bundle" "exec" "rspec")
       '("rspec")))
 
