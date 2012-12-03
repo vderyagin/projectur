@@ -106,8 +106,7 @@ this is not considered a conflict, duplication is getting dealt with by
      (stringp root)
      (file-directory-p root)
      (if test
-         (and (functionp test)
-              (funcall test root))
+         (funcall test root)
          t))))
 
 (defun projectur-current-project ()
@@ -287,8 +286,7 @@ context for executing."
   "Set DIR as root of current project."
   (interactive "DProject root: ")
   (projectur-history-add
-   (cons (file-name-as-directory (expand-file-name dir))
-         '(:test nil))))
+   (list (file-name-as-directory (expand-file-name dir)))))
 
 ;;;###autoload
 (defun projectur-delete-from-history ()
