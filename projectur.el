@@ -141,6 +141,7 @@ Return nil if unsuccessful."
   (loop
      with project
      with dir = (expand-file-name default-directory)
+     initially (when (file-remote-p dir) (return))
      until (string= dir "/")
      thereis project
      do
