@@ -37,6 +37,9 @@
      :test projectur-ruby-project-under-version-control-p
      :tags-command "exuberant-ctags -e **/*.rb"
      :ignored-dirs ("tmp" "pkg"))
+    ("sbt project"
+     :test projectur-sbt-project-p
+     :ignored-dirs ("project" "target"))
     ("Generic version-controlled project"
      :test projectur-version-controlled-repo-p))
   "A list with projects types descriptions.")
@@ -493,6 +496,10 @@ Supported VCS: git, mercurial, subversion, bazaar, cvs, darcs."
     (file-regular-p (expand-file-name ".rspec" dir))
     (file-regular-p (expand-file-name ".rvmrc" dir))
     (file-regular-p (expand-file-name ".rbenv-version" dir)))))
+
+(defun projectur-sbt-project-p (dir)
+  "Return non-nil if DIR is a root of sbt project, nil otherwise."
+  (file-regular-p (expand-file-name "build.sbt" dir)))
 
 (provide 'projectur)
 
