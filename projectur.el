@@ -250,7 +250,7 @@ Return nil if unsuccessful."
 ;;;###autoload
 (defun projectur-goto-root (choose-project)
   "Open root directory of current project.
-If called with prefix argument or current buffer does not belong
+If CHOOSE-PROJECT is non-nil or current buffer does not belong
 to any project, ask to choose project from list and use it as
 context for executing."
   (interactive "P")
@@ -265,7 +265,7 @@ context for executing."
 ;;;###autoload
 (defun projectur-find-file (choose-project)
   "Open file from current project.
-If called with prefix argument or current buffer does not belong
+If CHOOSE-PROJECT is non-nil or current buffer does not belong
 to any project, ask to choose project from list and use it as
 context for executing."
   (interactive "P")
