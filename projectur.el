@@ -236,6 +236,7 @@ Return nil if unsuccessful."
   (declare (indent 1))
   `(progn
      (unless (projectur-project-valid-p ,project)
+       (projectur-history-cleanup)
        (error (format "Invalid project: %s" ,project)))
      (let ((default-directory (projectur-project-root ,project)))
        ,@body)))
