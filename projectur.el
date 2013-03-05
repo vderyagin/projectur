@@ -1,6 +1,6 @@
 ;;; projectur.el --- Support for projects in Emacs
 
-;; Copyright (C) 2012 Victor Deryagin
+;; Copyright (C) 2012-2013 Victor Deryagin
 
 ;; Author: Victor Deryagin <vderyagin@gmail.com>
 ;; Created: 3 Aug 2012
