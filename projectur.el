@@ -312,7 +312,7 @@ context for executing."
          (buffers (projectur-buffers project)))
     (if buffers
         (when (yes-or-no-p
-               (format "About to kill all opened files from project '%s'. Are you sure? "
+               (format "About to kill buffers for all opened files from project '%s'. Are you sure? "
                        project-name))
           (mapc 'kill-buffer buffers))
         (message
