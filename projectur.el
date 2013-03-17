@@ -407,6 +407,7 @@ context for executing."
           (ido-completing-read prompt display-choices)))
     (cdr (assoc chosen results-map))))
 
+;;;###autoload
 (defun projectur-show-current-file ()
   "Show path of current file relative to its project root in minibuffer.
 Show absolute path if current file does not belong to any project.
