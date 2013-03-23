@@ -55,7 +55,7 @@
 
 (defvar projectur-history nil "List of visited projects.")
 
-(defvar projectur-tags-command "exuberant-ctags -e --recurse ."
+(defvar projectur-tags-default-command "exuberant-ctags -e --recurse ."
   "Shell command for generating TAGS file for project.
 Executed in context of projects root directory.")
 
@@ -178,7 +178,7 @@ Return nil if unsuccessful."
   "Return TAGS generation comman for PROJECT."
   (or
    (plist-get (cdr project) :tags-command)
-   projectur-tags-command))
+   projectur-tags-default-command))
 
 (defun projectur-project-name (project)
   "Return name of PROJECT."
