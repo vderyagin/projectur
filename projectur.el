@@ -91,9 +91,9 @@ Return nil if no conflicts detected.  Conflict is understood as
 parent-directory/subdirectory relationships between root of PROJECT
  and root of some other project from history.
 
-Special case is when root of PROJECT matches root of project from history,
-this is not considered a conflict, duplication is getting dealt with by
-`projectur-history-cleanup'."
+Special case is when root of PROJECT matches root of project from
+history, this is not considered a conflict, duplication gets
+dealt with by `projectur-history-cleanup'."
   (loop
      with root = (projectur-project-root project)
      for other-root in (mapcar 'projectur-project-root projectur-history)
