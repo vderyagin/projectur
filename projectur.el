@@ -496,6 +496,7 @@ Supported VCS: git, mercurial, subversion, bazaar, cvs, darcs."
     (file-regular-p (expand-file-name "features/support/env.rb" dir))
     (file-regular-p (expand-file-name ".rspec" dir))
     (file-regular-p (expand-file-name ".rvmrc" dir))
+    (file-regular-p (expand-file-name ".ruby-version" dir))
     (file-regular-p (expand-file-name ".rbenv-version" dir)))))
 
 (defun projectur-sbt-project-p (dir)
