@@ -244,12 +244,11 @@ Return nil if unsuccessful."
 (defmacro projectur-with-current-project (&rest body)
   "With `default-directory' bound to root directory of current project execute BODY."
   (declare (indent 0))
-  `(progn
-     (let ((project (projectur-current-project)))
-       (unless (projectur-project-valid-p project)
-         (error "Current buffer does not seem to belong to any project"))
-       (projectur-with-project project
-         ,@body))))
+  `(let ((project (projectur-current-project)))
+     (unless (projectur-project-valid-p project)
+       (error "Current buffer does not seem to belong to any project"))
+     (projectur-with-project project
+       ,@body)))
 
 ;;;###autoload
 (defun projectur-goto-root (choose-project)
