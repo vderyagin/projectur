@@ -1,4 +1,4 @@
-;;; projectur-rspec.el --- Run RSpec examples in project.
+;;; projectur-rspec.el --- Run RSpec examples in project. -*- lexical-binding: t -*-
 
 ;;; Commentary:
 
@@ -78,8 +78,3 @@ if SCOPE = 'suite - whole rspec suite."
 (provide 'projectur-rspec)
 
 ;;; projectur-rspec.el ends here
-
-;; Local Variables:
-;; lexical-binding: t
-;; coding: us-ascii
-;; End:

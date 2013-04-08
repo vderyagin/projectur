@@ -1,4 +1,4 @@
-;;; projectur.el --- Support for projects in Emacs
+;;; projectur.el --- Support for projects in Emacs -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2012-2013 Victor Deryagin
 
@@ -505,8 +505,3 @@ Supported VCS: git, mercurial, subversion, bazaar, cvs, darcs."
 (provide 'projectur)
 
 ;;; projectur.el ends here
-
-;; Local Variables:
-;; lexical-binding: t
-;; coding: us-ascii
-;; End:
