@@ -38,7 +38,7 @@ With double ARG executes whole rspec suite of current project."
   (when (memq scope '(at-point file))
     (unless (and
              buffer-file-name
-             (string-match-p "._spec\.rb" buffer-file-name))
+             (string-match-p (rx not-newline word-boundary "_spec.rb" string-end) buffer-file-name))
       (error "Current buffer does not seem to be visiting RSpec spec file"))))
 
 (defun projectur-rspec-execute-specs (scope)
