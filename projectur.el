@@ -342,23 +342,6 @@ context for executing."
         (error "You need `ack' command installed in order to use this functionality")))  )
 
 ;;;###autoload
-(defun projectur-version-control ()
-  "Open appropriate version control interface for current project."
-  (interactive)
-  (projectur-with-current-project
-    (cond
-      ((and
-        (projectur-git-repo-p default-directory)
-        (fboundp 'magit-status))
-       (magit-status default-directory))
-      ((and
-        (projectur-mercurial-repo-p default-directory)
-        (fboundp 'ahg-status))
-       (ahg-status default-directory))
-      (t
-       (vc-dir default-directory nil)))))
-
-;;;###autoload
 (defun projectur-generate-tags ()
   "Generate TAGS file for current project."
   (interactive)
