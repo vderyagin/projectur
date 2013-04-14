@@ -371,7 +371,7 @@ context for executing."
 
 ;;;###autoload
 (defun projectur-save ()
-  "Save all opened buffers that belong to current project."
+  "Save all opened files that belong to current project."
   (interactive)
   (mapc
    (lambda (buf)
