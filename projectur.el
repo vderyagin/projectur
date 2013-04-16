@@ -62,6 +62,25 @@ Executed in context of projects root directory.")
 (defvar projectur-default-readme-file-name "Readme.md"
   "Default name for project README file.")
 
+(defmacro projectur-with-project (project &rest body)
+  "With `default-directory' bound to PROJECT root directory execute BODY."
+  (declare (indent 1))
+  `(progn
+     (unless (projectur-project-valid-p ,project)
+       (projectur-history-cleanup)
+       (error (format "Invalid project: %s" ,project)))
+     (let ((default-directory (projectur-project-root ,project)))
+       ,@body)))
+
+(defmacro projectur-with-current-project (&rest body)
+  "With `default-directory' bound to root directory of current project execute BODY."
+  (declare (indent 0))
+  `(let ((project (projectur-current-project)))
+     (unless (projectur-project-valid-p project)
+       (error "Current buffer does not seem to belong to any project"))
+     (projectur-with-project project
+       ,@body)))
+
 (defun projectur-history-cleanup ()
   "Delete invalid and duplicate projects from `projectur-history'."
   (setq projectur-history
@@ -242,25 +261,6 @@ Return nil if unsuccessful."
       (and
        buffer-file-name
        (string-prefix-p root buffer-file-name)))))
-
-(defmacro projectur-with-project (project &rest body)
-  "With `default-directory' bound to PROJECT root directory execute BODY."
-  (declare (indent 1))
-  `(progn
-     (unless (projectur-project-valid-p ,project)
-       (projectur-history-cleanup)
-       (error (format "Invalid project: %s" ,project)))
-     (let ((default-directory (projectur-project-root ,project)))
-       ,@body)))
-
-(defmacro projectur-with-current-project (&rest body)
-  "With `default-directory' bound to root directory of current project execute BODY."
-  (declare (indent 0))
-  `(let ((project (projectur-current-project)))
-     (unless (projectur-project-valid-p project)
-       (error "Current buffer does not seem to belong to any project"))
-     (projectur-with-project project
-       ,@body)))
 
 ;;;###autoload
 (defun projectur-goto-root (choose-project)
