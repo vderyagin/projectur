@@ -262,8 +262,7 @@ context for executing."
       (setq project (projectur-current-project)))
     (unless project
       (setq project (projectur-select-project-from-history)))
-    (projectur-with-project project
-      (find-file default-directory))))
+    (find-file (projectur-project-root project))))
 
 ;;;###autoload
 (defun projectur-find-file (choose-project)
