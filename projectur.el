@@ -59,6 +59,9 @@
   "Shell command for generating TAGS file for project.
 Executed in context of projects root directory.")
 
+(defvar projectur-default-readme-file-name "Readme.md"
+  "Default name for project README file.")
+
 (defun projectur-history-cleanup ()
   "Delete invalid and duplicate projects from `projectur-history'."
   (setq projectur-history
@@ -195,6 +198,15 @@ Return nil if unsuccessful."
   "Return list of wildcards of ignored files for PROJECT."
   (append projectur-ignored-files
           (plist-get (cdr project) :ignored-files)))
+
+(defun projectur-project-readme (project)
+  "Find README file for project PROJECT."
+  (loop
+     with root = (projectur-project-root project)
+     for pattern in (mapcar
+                     (lambda (p) (expand-file-name p root))
+                     '("Readme*" "readme*" "README*"))
+     thereis (car (file-expand-wildcards pattern))))
 
 (defun projectur-find-cmd (project)
   "Generate find(1) command for finding al relevant files withing PROJECT."
@@ -370,6 +382,17 @@ context for executing."
      (with-current-buffer buf
        (revert-buffer nil 'noconfirm 'preserve-modes)))
    (projectur-buffers (projectur-current-project))))
+
+;;;###autoload
+(defun projectur-goto-readme ()
+  "Go to README file in current project root directory, creane one if it does not exist."
+  (interactive)
+  (let* ((project (projectur-current-project))
+         (root (projectur-project-root project))
+         (readme (or (projectur-project-readme project)
+                     (expand-file-name projectur-default-readme-file-name root))))
+
+    (find-file readme)))
 
 (defun* projectur-complete (prompt choices &optional (display-fn 'identity))
   "Select one of CHOICES, with PROMPT, use DISPLAY-FN for display if provided,
