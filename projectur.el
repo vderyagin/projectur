@@ -4,7 +4,7 @@
 
 ;; Author: Victor Deryagin <vderyagin@gmail.com>
 ;; Created: 3 Aug 2012
-;; Version: 0.1.2
+;; Version: 0.1.3
 
 ;; This file is not part of GNU Emacs.
 
@@ -274,7 +274,8 @@ context for executing."
       (setq project (projectur-current-project)))
     (unless project
       (setq project (projectur-select-project-from-history)))
-    (find-file (projectur-project-root project))))
+    (projectur-with-project project
+      (find-file default-directory))))
 
 ;;;###autoload
 (defun projectur-find-file (choose-project)
