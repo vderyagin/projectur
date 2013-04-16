@@ -62,6 +62,28 @@ Executed in context of projects root directory.")
 (defvar projectur-default-readme-file-name "Readme.md"
   "Default name for project README file.")
 
+(defvar projectur-command-prefix (kbd "C-c p")
+  "Prefix of projectur bindings.")
+
+(defvar projectur-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "!" 'projectur-execute-shell-command)
+    (define-key map "+" 'projectur-set-project-root)
+    (define-key map "." 'projectur-show-current-file)
+    (define-key map "R" 'projectur-goto-readme)
+    (define-key map "T" 'projectur-generate-tags)
+    (define-key map "a" 'projectur-ack)
+    (define-key map "d" 'projectur-delete-from-history)
+    (define-key map "f" 'projectur-find-file)
+    (define-key map "g" 'projectur-rgrep)
+    (define-key map "r" 'projectur-goto-root)
+    (define-key map (kbd "C-x C-s") 'projectur-save)
+    (define-key map (kbd "C-x k") 'projectur-kill-buffers)
+    map)
+  "Key map with projectur commands.")
+
+(define-key global-map projectur-command-prefix projectur-map)
+
 (defmacro projectur-with-project (project &rest body)
   "With `default-directory' bound to PROJECT root directory execute BODY."
   (declare (indent 1))
