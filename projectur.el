@@ -219,7 +219,7 @@ Return nil if unsuccessful."
           (plist-get (cdr project) :ignored-files)))
 
 (defun projectur-project-readme (project)
-  "Find README file for project PROJECT."
+  "Find README file for project PROJECT, return nil if none."
   (loop
      with root = (projectur-project-root project)
      for pattern in (mapcar
@@ -385,13 +385,12 @@ context for executing."
 
 ;;;###autoload
 (defun projectur-goto-readme ()
-  "Go to README file in current project root directory, creane one if it does not exist."
+  "Go to README file in current project root directory, create one if it does not exist."
   (interactive)
   (let* ((project (projectur-current-project))
          (root (projectur-project-root project))
          (readme (or (projectur-project-readme project)
                      (expand-file-name projectur-default-readme-file-name root))))
-
     (find-file readme)))
 
 (defun* projectur-complete (prompt choices &optional (display-fn 'identity))
