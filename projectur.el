@@ -33,14 +33,14 @@
 (require 'ido)
 
 (defvar projectur-project-types
-  '(("Version-controlled ruby project"
+  '((:type "Version-controlled ruby project"
      :test projectur-ruby-project-under-version-control-p
      :tags-command "exuberant-ctags -e **/*.rb"
      :ignored-dirs ("tmp" "pkg"))
-    ("sbt project"
+    (:type "sbt project"
      :test projectur-sbt-project-p
      :ignored-dirs ("project" "target"))
-    ("Generic version-controlled project"
+    (:type "Generic version-controlled project"
      :test projectur-version-controlled-repo-p))
   "A list with projects types descriptions.")
 
@@ -199,10 +199,10 @@ Return nil if unsuccessful."
   "Return project with root in ROOT, nil if ROOT is not a root of any project."
   (loop
      for project-type in projectur-project-types
-     for test-function = (plist-get (cdr project-type) :test)
+     for test-function = (plist-get project-type :test)
      if (funcall test-function root)
      return (cons (file-name-as-directory root)
-                  (cdr project-type))))
+                  project-type)))
 
 (defun* projectur-select-project-from-history (&optional (prompt "Select project: "))
   "Select single project from `projectur-history'."
