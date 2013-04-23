@@ -76,7 +76,7 @@ Executed in context of projects root directory."
      :test projectur-version-controlled-repo-p))
   "A list with projects types descriptions."
   :group 'projectur
-  :type '(repeat plist))
+  :type '(repeat (plist :tag "Project type specification")))
 
 (defvar projectur-history nil "List of visited projects.")
 
