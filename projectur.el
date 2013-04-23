@@ -32,7 +32,39 @@
 
 (require 'ido)
 
-(defvar projectur-project-types
+(defgroup projectur nil
+  "Tool for managing and navigating projects."
+  :prefix "projectur-"
+  :group 'tools
+  :group 'convenience)
+
+(defcustom projectur-tags-default-command "exuberant-ctags -e --recurse ."
+  "Shell command for generating TAGS file for project.
+Executed in context of projects root directory."
+  :group 'projectur
+  :type 'string)
+
+(defcustom projectur-ignored-dirs
+  '(".hg" ".git" ".bzr" ".svn" ".rbx" "_darcs" "_MTN" "CVS" "RCS" "SCCS")
+  "List of names of directories, content of which will be excluded from any project."
+  :group 'projectur
+  :type '(choice (repeat :tag "Ignored directories" string)
+                 (const :tag "No ignored directories" nil)))
+
+(defcustom projectur-ignored-files
+  '("*.elc" "*.rbc" "*.py[co]" "*.a" "*.o" "*.so" "*.bin" "*.class"
+    "*.s[ac]ssc" "*.sqlite3" "TAGS" ".gitkeep" "*~" "#*#")
+  "List of wildcards, matching names of files, which will be excluded from any project."
+  :group 'projectur
+  :type '(choice (repeat :tag "Ignored files" string)
+                 (const :tag "No ignored files" nil)))
+
+(defcustom projectur-default-readme-file-name "Readme.md"
+  "Default name for project README file."
+  :group 'projectur
+  :type 'string)
+
+(defcustom projectur-project-types
   '((:type "Version-controlled ruby project"
      :test projectur-ruby-project-under-version-control-p
      :tags-command "exuberant-ctags -e **/*.rb"
@@ -42,25 +74,11 @@
      :ignored-dirs ("project" "target"))
     (:type "Generic version-controlled project"
      :test projectur-version-controlled-repo-p))
-  "A list with projects types descriptions.")
-
-(defvar projectur-ignored-dirs
-  '(".hg" ".git" ".bzr" ".svn" ".rbx" "_darcs" "_MTN" "CVS" "RCS" "SCCS")
-  "List of names of directories, content of which will be excluded from any project.")
-
-(defvar projectur-ignored-files
-  '("*.elc" "*.rbc" "*.py[co]" "*.a" "*.o" "*.so" "*.bin" "*.class"
-    "*.s[ac]ssc" "*.sqlite3" "TAGS" ".gitkeep" "*~" "#*#")
-  "List of wildcards, matching names of files, which will be excluded from any project.")
+  "A list with projects types descriptions."
+  :group 'projectur
+  :type '(repeat plist))
 
 (defvar projectur-history nil "List of visited projects.")
-
-(defvar projectur-tags-default-command "exuberant-ctags -e --recurse ."
-  "Shell command for generating TAGS file for project.
-Executed in context of projects root directory.")
-
-(defvar projectur-default-readme-file-name "Readme.md"
-  "Default name for project README file.")
 
 (defvar projectur-command-prefix (kbd "C-c p")
   "Prefix of projectur bindings.")
