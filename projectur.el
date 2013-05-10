@@ -45,7 +45,7 @@ Executed in context of projects root directory."
   :type 'string)
 
 (defcustom projectur-ignored-dirs
-  '(".hg" ".git" ".bzr" ".svn" ".rbx" "_darcs" "_MTN" "CVS" "RCS" "SCCS")
+  '(".hg" ".git" ".bzr" ".svn" ".rbx" "_darcs" "_MTN" "CVS" "RCS" "SCCS" "tmp" "node_modules")
   "List of names of directories, content of which will be excluded from any project."
   :group 'projectur
   :type '(choice (repeat :tag "Ignored directories" string)
