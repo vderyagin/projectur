@@ -297,13 +297,14 @@ Return nil if unsuccessful."
      collect buf))
 
 (defun projectur-buffer-in-project-p (buffer-or-name project)
-  "Return non-nil if BUFFER-OR-NAME is visiting a file, belonging to PROJECT."
+  "Return non-nil if BUFFER-OR-NAME belongs to PROJECT."
   (let ((buf (get-buffer buffer-or-name))
-        (root (projectur-project-root project)))
+        (root (projectur-project-root project))
+        location)
     (with-current-buffer buf
-      (and
-       buffer-file-name
-       (string-prefix-p root buffer-file-name)))))
+      (setq location (or buffer-file-name dired-directory)))
+    (and location
+         (string-prefix-p root (expand-file-name location)))))
 
 ;;;###autoload
 (defun projectur-goto-root (choose-project)
