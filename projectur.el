@@ -377,9 +377,9 @@ If LIMIT-TO-MODE is true, ask for major mode and kill only those buffers with ch
             (setq mode (intern (ido-completing-read "Kill buffers in mode: " (mapcar 'symbol-name modes)))))
           (mapc
            (lambda (buf)
-             (and mode
-                  (with-current-buffer buf (derived-mode-p mode))
-                  (kill-buffer buf)))
+             (when (or (not mode)
+                       (with-current-buffer buf (derived-mode-p mode)))
+               (kill-buffer buf)))
            buffers))
       (message
        (format "Nothing to do, there are currently no opened files from project '%s'."
