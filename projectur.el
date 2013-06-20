@@ -358,20 +358,32 @@ context for executing."
              (abbreviate-file-name (projectur-project-root project)))))
 
 ;;;###autoload
-(defun projectur-kill-buffers ()
-  "Kill all buffers (even unsaved) visiting files from current project."
-  (interactive)
+(defun projectur-kill-buffers (&optional limit-to-mode)
+  "Kill all buffers (even unsaved) visiting files from current project.
+If LIMIT-TO-MODE is true, ask for major mode and kill only those buffers with chosen major mode."
+  (interactive "P")
   (let* ((project (projectur-current-project))
          (project-name (projectur-project-name project))
-         (buffers (projectur-buffers project)))
+         (buffers (projectur-buffers project))
+         (modes (delete-dups (mapcar (lambda (buf) (with-current-buffer buf major-mode)) buffers)))
+         mode)
     (if buffers
-        (when (yes-or-no-p
-               (format "About to kill buffers for all opened files from project '%s'. Are you sure? "
-                       project-name))
-          (mapc 'kill-buffer buffers))
-        (message
-         (format "Nothing to do, there are currently no opened files from project '%s'."
-                 project-name)))))
+        (when (or limit-to-mode
+                  (yes-or-no-p
+                   (format "About to kill buffers for all opened files from project '%s'. Are you sure? "
+                           project-name)))
+          (when (and limit-to-mode
+                     (> (length modes) 1))
+            (setq mode (intern (ido-completing-read "Kill buffers in mode: " (mapcar 'symbol-name modes)))))
+          (mapc
+           (lambda (buf)
+             (and mode
+                  (with-current-buffer buf (derived-mode-p mode))
+                  (kill-buffer buf)))
+           buffers))
+      (message
+       (format "Nothing to do, there are currently no opened files from project '%s'."
+               project-name)))))
 
 ;;;###autoload
 (defun projectur-rgrep ()
