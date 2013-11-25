@@ -152,13 +152,13 @@ Executed in context of projects root directory."
 
 (defun projectur-conflicting-root-from-history (project)
   "Return root of project from `projectur-history' PROJECT conflicts with.
-Return nil if no conflicts detected. Conflict is understood as
+Return nil if no conflicts detected.  Conflict is understood as
 parent-directory/subdirectory relationships between root of PROJECT
- and root of some other project from history.
+and root of some other project from history.
 
 Special case is when root of PROJECT matches root of project from
-history, this is not considered a conflict, duplication gets
-dealt with by `projectur-history-cleanup'."
+history, this is not considered a conflict, duplication is dealt
+with by `projectur-history-cleanup'."
   (loop
      with root = (projectur-project-root project)
      for other-root in (mapcar 'projectur-project-root projectur-history)
@@ -204,25 +204,18 @@ Return nil if unsuccessful."
          (string-prefix-p dir subdir))))
 
 (defun projectur-project-try-fetch ()
-  "Make attempt to fetch current project by going up filesystem tree.
-Return nil if unsuccessful."
-  (loop
-     with project
-     with dir = (expand-file-name default-directory)
-     initially (when (file-remote-p dir) (return))
-     until (string= dir "/")
-     thereis project
-     do
-       (setq project (projectur-project-with-root dir)
-             dir (expand-file-name ".." dir))))
+  "Attempt to fetch current project, return nil if unsuccessful."
+  (let ((dir (expand-file-name default-directory)))
+    (unless (file-remote-p dir)
+      (projectur-project-with-dir dir))))
 
-(defun projectur-project-with-root (root)
-  "Return project with root in ROOT, nil if ROOT is not a root of any project."
+(defun projectur-project-with-dir (dir)
+  "Return project DIR belongs to, return nil if none."
   (loop
      for project-type in projectur-project-types
      for test-function = (plist-get project-type :test)
-     if (funcall test-function root)
-     return (cons (file-name-as-directory root)
+     if (locate-dominating-file dir test-function)
+     return (cons (file-name-as-directory dir)
                   project-type)))
 
 (defun* projectur-select-project-from-history (&optional (prompt "Select project: "))
