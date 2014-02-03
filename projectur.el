@@ -214,8 +214,9 @@ Return nil if unsuccessful."
   (loop
      for project-type in projectur-project-types
      for test-function = (plist-get project-type :test)
-     if (locate-dominating-file dir test-function)
-     return (cons (file-name-as-directory dir)
+     for root = (locate-dominating-file dir test-function)
+     if root
+     return (cons (file-name-as-directory root)
                   project-type)))
 
 (defun* projectur-select-project-from-history (&optional (prompt "Select project: "))
