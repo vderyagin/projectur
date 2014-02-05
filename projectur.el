@@ -27,9 +27,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(require 'cl-lib)
 (require 'ido)
 
 (defgroup projectur nil
@@ -127,7 +125,7 @@ Executed in context of projects root directory."
 (defun projectur-history-cleanup ()
   "Delete invalid and duplicate projects from `projectur-history'."
   (setq projectur-history
-        (loop
+        (cl-loop
            for project in projectur-history
            for root = (projectur-project-root project)
            if (and
@@ -159,7 +157,7 @@ and root of some other project from history.
 Special case is when root of PROJECT matches root of project from
 history, this is not considered a conflict, duplication is dealt
 with by `projectur-history-cleanup'."
-  (loop
+  (cl-loop
      with root = (projectur-project-root project)
      for other-root in (mapcar 'projectur-project-root projectur-history)
      if (or (projectur-subdirectory-p root other-root)
@@ -188,7 +186,7 @@ with by `projectur-history-cleanup'."
 (defun projectur-project-try-find-in-history ()
   "Make attempt to find current buffer's project in `projectur-history'.
 Return nil if unsuccessful."
-  (loop
+  (cl-loop
      with current-directory = (expand-file-name (file-name-as-directory default-directory))
      for project in projectur-history
      for root = (projectur-project-root project)
@@ -211,7 +209,7 @@ Return nil if unsuccessful."
 
 (defun projectur-project-with-dir (dir)
   "Return project DIR belongs to, return nil if none."
-  (loop
+  (cl-loop
      for project-type in projectur-project-types
      for test-function = (plist-get project-type :test)
      for root = (locate-dominating-file dir test-function)
@@ -219,7 +217,7 @@ Return nil if unsuccessful."
      return (cons (file-name-as-directory root)
                   project-type)))
 
-(defun* projectur-select-project-from-history (&optional (prompt "Select project: "))
+(cl-defun projectur-select-project-from-history (&optional (prompt "Select project: "))
   "Select single project from `projectur-history'."
   (projectur-complete
    prompt projectur-history
@@ -257,7 +255,7 @@ Return nil if unsuccessful."
 
 (defun projectur-project-readme (project)
   "Find README file for project PROJECT, return nil if none."
-  (loop
+  (cl-loop
      with root = (projectur-project-root project)
      for pattern in (mapcar
                      (lambda (p) (expand-file-name p root))
@@ -285,7 +283,7 @@ Return nil if unsuccessful."
 
 (defun projectur-buffers (project)
   "Return list of buffers, visiting files, belonging to PROJECT."
-  (loop
+  (cl-loop
      for buf in (buffer-list)
      if (projectur-buffer-in-project-p buf project)
      collect buf))
@@ -443,7 +441,7 @@ If LIMIT-TO-MODE is true, ask for major mode and kill only those buffers with ch
                      (expand-file-name projectur-default-readme-file-name root))))
     (find-file readme)))
 
-(defun* projectur-complete (prompt choices &optional (display-fn 'identity))
+(cl-defun projectur-complete (prompt choices &optional (display-fn 'identity))
   "Select one of CHOICES, with PROMPT, use DISPLAY-FN for display if provided,
 `identity' otherwise."
   (let* ((ido-decorations '("\n-> " "" "\n   " "\n   ..." "[" "]"
@@ -518,7 +516,7 @@ Display error if current buffer is not visiting a file."
 
 (defun projectur-rake-project-p (dir)
   "Return non-nil if DIR is a root of project using rake, nil otherwise."
-  (loop
+  (cl-loop
      for rakefile in '("rakefile" "Rakefile" "rakefile.rb" "Rakefile.rb")
      thereis (file-regular-p (expand-file-name rakefile dir))))
 
