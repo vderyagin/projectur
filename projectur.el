@@ -204,9 +204,9 @@ Return nil if unsuccessful."
   "Attempt to fetch current project, return nil if unsuccessful."
   (let ((dir (expand-file-name default-directory)))
     (unless (file-remote-p dir)
-      (projectur-project-with-dir dir))))
+      (projectur-project-containing-dir dir))))
 
-(defun projectur-project-with-dir (dir)
+(defun projectur-project-containing-dir (dir)
   "Return project DIR belongs to, return nil if none."
   (cl-loop
      for project-type in projectur-project-types
