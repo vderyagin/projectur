@@ -109,7 +109,7 @@ Executed in context of projects root directory."
   `(progn
      (unless (projectur-project-valid-p ,project)
        (projectur-history-cleanup)
-       (error (format "Invalid project: %s" ,project)))
+       (error "Invalid project: %s" ,project))
      (let ((default-directory (projectur-project-root ,project)))
        ,@body)))
 
@@ -140,10 +140,9 @@ Executed in context of projects root directory."
     (let ((root (projectur-project-root project))
           (conflicting-root (projectur-conflicting-root-from-history project)))
       (when conflicting-root
-        (error (format
-                "Failed to add project in '%s': conflict with other one in '%s'"
-                (abbreviate-file-name root)
-                (abbreviate-file-name conflicting-root))))
+        (error "Failed to add project in '%s': conflict with other one in '%s'"
+               (abbreviate-file-name root)
+               (abbreviate-file-name conflicting-root)))
 
       (add-to-list 'projectur-history project)
       (projectur-history-cleanup))))
@@ -373,9 +372,8 @@ If LIMIT-TO-MODE is true, ask for major mode and kill only those buffers with ch
                        (with-current-buffer buf (derived-mode-p mode)))
                (kill-buffer buf)))
            buffers))
-      (message
-       (format "Nothing to do, there are currently no opened files from project '%s'."
-               project-name)))))
+      (message "Nothing to do, there are currently no opened files from project '%s'."
+               project-name))))
 
 ;;;###autoload
 (defun projectur-rgrep ()
