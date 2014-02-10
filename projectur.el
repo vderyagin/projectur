@@ -52,7 +52,7 @@ Executed in context of projects root directory."
 
 (defcustom projectur-ignored-files
   '("*.elc" "*.rbc" "*.py[co]" "*.a" "*.o" "*.so" "*.bin" "*.class"
-    "*.s[ac]ssc" "*.sqlite3" "TAGS" ".gitkeep" "*~" "#*#")
+    "*.s[ac]ssc" "*.sqlite3" "TAGS" ".gitkeep" "*~" "#*#" "*.hi")
   "List of wildcards, matching names of files, which will be excluded from any project."
   :group 'projectur
   :type '(choice (repeat :tag "Ignored files" string)
