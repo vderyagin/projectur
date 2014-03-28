@@ -71,6 +71,9 @@ Executed in context of projects root directory."
     (:type "sbt project"
      :test projectur-sbt-project-p
      :ignored-dirs ("project" "target"))
+    (:type "cabal project"
+     :test projectur-cabal-project-p
+     :ignored-dirs ("dist"))
     (:type "Generic version-controlled project"
      :test projectur-version-controlled-repo-p))
   "A list with projects types descriptions."
@@ -552,6 +555,12 @@ Supported VCS: git, mercurial, subversion, bazaar, cvs, darcs."
 (defun projectur-sbt-project-p (dir)
   "Return non-nil if DIR is a root of sbt project, nil otherwise."
   (file-regular-p (expand-file-name "build.sbt" dir)))
+
+(defun projectur-cabal-project-p (dir)
+  "Return non-nil if DIR is a root of cabal project, nil otherwise."
+  (and
+   (file-regular-p (expand-file-name "Setup.hs" dir))
+   (file-expand-wildcards (expand-file-name "*.cabal" dir))))
 
 (provide 'projectur)
 
