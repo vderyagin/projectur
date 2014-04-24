@@ -99,6 +99,7 @@ Executed in context of projects root directory."
       (define-key map "f" 'projectur-find-file)
       (define-key map "g" 'projectur-rgrep)
       (define-key map "r" 'projectur-goto-root)
+      (define-key map (kbd "<f9>") 'projectur-recompile)
       (define-key map (kbd "C-x C-s") 'projectur-save)
       (define-key map (kbd "C-x k") 'projectur-kill-buffers)
       map)
@@ -475,6 +476,12 @@ Display error if current buffer is not visiting a file."
                              (projectur-project-root project))
          (abbreviate-file-name buffer-file-name)))))
 
+;;;###autoload
+(defun projectur-recompile (&optional edit-command)
+  "Execute `recompile' in context of root of current project."
+  (interactive "P")
+  (projectur-with-current-project
+    (recompile edit-command)))
 
 (defun projectur-git-repo-p (dir)
   "Return non-nil if DIR is a root of git repository, nil otherwise."
