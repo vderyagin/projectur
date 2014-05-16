@@ -30,6 +30,8 @@
 (require 'cl-lib)
 (require 'ido)
 
+(declare-function recompile "compile")
+
 (defgroup projectur nil
   "Tool for managing and navigating projects."
   :prefix "projectur-"
