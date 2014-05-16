@@ -566,7 +566,9 @@ Supported VCS: git, mercurial, subversion, bazaar, cvs, darcs."
 (defun projectur-cabal-project-p (dir)
   "Return non-nil if DIR is a root of cabal project, nil otherwise."
   (and
-   (file-regular-p (expand-file-name "Setup.hs" dir))
+   (or
+    (file-regular-p (expand-file-name "Setup.hs" dir))
+    (file-regular-p (expand-file-name "Setup.lhs" dir)))
    (file-expand-wildcards (expand-file-name "*.cabal" dir))))
 
 (provide 'projectur)
