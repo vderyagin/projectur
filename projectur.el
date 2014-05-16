@@ -478,10 +478,12 @@ Display error if current buffer is not visiting a file."
 
 ;;;###autoload
 (defun projectur-recompile (&optional edit-command)
-  "Execute `recompile' in context of root of current project."
+  "Execute `recompile' in context of root of current project.
+Input compilation command if EDIT-COMMAND is not nil."
   (interactive "P")
   (projectur-with-current-project
     (recompile edit-command)))
+
 
 (defun projectur-git-repo-p (dir)
   "Return non-nil if DIR is a root of git repository, nil otherwise."
