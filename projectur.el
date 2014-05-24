@@ -299,7 +299,7 @@ Return nil if unsuccessful."
         (root (expand-file-name (projectur-project-root project)))
         location)
     (with-current-buffer buf
-      (setq location (or buffer-file-name dired-directory)))
+      (setq location (or buffer-file-name default-directory)))
     (and location
          (string-prefix-p root (expand-file-name location)))))
 
