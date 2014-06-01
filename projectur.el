@@ -67,20 +67,20 @@ Executed in context of projects root directory."
 
 (defcustom projectur-project-types
   '((:type "Version-controlled ruby project"
-     :test projectur-ruby-project-under-version-control-p
-     :tags-command "exuberant-ctags -e **/*.rb"
-     :ignored-dirs ("tmp" "pkg"))
+           :test projectur-ruby-project-under-version-control-p
+           :tags-command "exuberant-ctags -e **/*.rb"
+           :ignored-dirs ("tmp" "pkg"))
     (:type "sbt project"
-     :test projectur-sbt-project-p
-     :ignored-dirs ("project" "target"))
+           :test projectur-sbt-project-p
+           :ignored-dirs ("project" "target"))
     (:type "cabal project"
-     :test projectur-cabal-project-p
-     :ignored-dirs ("dist"))
+           :test projectur-cabal-project-p
+           :ignored-dirs ("dist"))
     (:type "Leiningen project"
-     :test projectur-lein-project-p
-     :ignored-dirs ("target"))
+           :test projectur-lein-project-p
+           :ignored-dirs ("target"))
     (:type "Generic version-controlled project"
-     :test projectur-version-controlled-repo-p))
+           :test projectur-version-controlled-repo-p))
   "A list with projects types descriptions."
   :group 'projectur
   :type '(repeat (plist :tag "Project type specification")))
@@ -134,14 +134,13 @@ Executed in context of projects root directory."
 (defun projectur-history-cleanup ()
   "Delete invalid and duplicate projects from `projectur-history'."
   (setq projectur-history
-        (cl-loop
-           for project in projectur-history
-           for root = (projectur-project-root project)
-           if (and
-               (projectur-project-valid-p project)
-               (not (member root seen-roots)))
-           collect project into projects and collect root into seen-roots
-           finally return projects)))
+        (cl-loop for project in projectur-history
+                 for root = (projectur-project-root project)
+                 if (and
+                     (projectur-project-valid-p project)
+                     (not (member root seen-roots)))
+                 collect project into projects and collect root into seen-roots
+                 finally return projects)))
 
 (defun projectur-history-add (project)
   "Add PROJECT to `projectur-history'."
@@ -165,12 +164,11 @@ and root of some other project from history.
 Special case is when root of PROJECT matches root of project from
 history, this is not considered a conflict, duplication is dealt
 with by `projectur-history-cleanup'."
-  (cl-loop
-     with root = (projectur-project-root project)
-     for other-root in (mapcar 'projectur-project-root projectur-history)
-     if (or (projectur-subdirectory-p root other-root)
-            (projectur-subdirectory-p other-root root))
-     return other-root))
+  (cl-loop with root = (projectur-project-root project)
+           for other-root in (mapcar 'projectur-project-root projectur-history)
+           if (or (projectur-subdirectory-p root other-root)
+                  (projectur-subdirectory-p other-root root))
+           return other-root))
 
 (defun projectur-project-valid-p (project)
   "Return non-nil if PROJECT is valid, nil otherwise."
@@ -181,7 +179,7 @@ with by `projectur-history-cleanup'."
      (file-directory-p root)
      (if test
          (funcall test root)
-         t))))
+       t))))
 
 (defun projectur-current-project ()
   "Return project current buffer belongs to, nil if none."
@@ -194,13 +192,12 @@ with by `projectur-history-cleanup'."
 (defun projectur-project-try-find-in-history ()
   "Make attempt to find current buffer's project in `projectur-history'.
 Return nil if unsuccessful."
-  (cl-loop
-     with current-directory = (expand-file-name (file-name-as-directory default-directory))
-     for project in projectur-history
-     for root = (projectur-project-root project)
-     if (or (string= current-directory root)
-            (projectur-subdirectory-p current-directory root))
-     return project))
+  (cl-loop with current-directory = (expand-file-name (file-name-as-directory default-directory))
+           for project in projectur-history
+           for root = (projectur-project-root project)
+           if (or (string= current-directory root)
+                  (projectur-subdirectory-p current-directory root))
+           return project))
 
 (defun projectur-subdirectory-p (subdir dir)
   "Return non-nil if SUBDIR is a subdirectory of DIR, nil otherwise."
@@ -217,13 +214,12 @@ Return nil if unsuccessful."
 
 (defun projectur-project-containing-dir (dir)
   "Return project DIR belongs to, return nil if none."
-  (cl-loop
-     for project-type in projectur-project-types
-     for test-function = (plist-get project-type :test)
-     for root = (locate-dominating-file dir test-function)
-     if root
-     return (cons (file-name-as-directory root)
-                  project-type)))
+  (cl-loop for project-type in projectur-project-types
+           for test-function = (plist-get project-type :test)
+           for root = (locate-dominating-file dir test-function)
+           if root
+           return (cons (file-name-as-directory root)
+                        project-type)))
 
 (cl-defun projectur-select-project-from-history (&optional (prompt "Select project: "))
   "Select single project from `projectur-history'."
@@ -263,12 +259,11 @@ Return nil if unsuccessful."
 
 (defun projectur-project-readme (project)
   "Find README file for project PROJECT, return nil if none."
-  (cl-loop
-     with root = (projectur-project-root project)
-     for pattern in (mapcar
-                     (lambda (p) (expand-file-name p root))
-                     '("Readme*" "readme*" "README*"))
-     thereis (car (file-expand-wildcards pattern))))
+  (cl-loop with root = (projectur-project-root project)
+           for pattern in (mapcar
+                           (lambda (p) (expand-file-name p root))
+                           '("Readme*" "readme*" "README*"))
+           thereis (car (file-expand-wildcards pattern))))
 
 (defun projectur-find-cmd (project)
   "Generate find(1) command for finding al relevant files withing PROJECT."
@@ -291,10 +286,9 @@ Return nil if unsuccessful."
 
 (defun projectur-buffers (project)
   "Return list of buffers, visiting files, belonging to PROJECT."
-  (cl-loop
-     for buf in (buffer-list)
-     if (projectur-buffer-in-project-p buf project)
-     collect buf))
+  (cl-loop for buf in (buffer-list)
+           if (projectur-buffer-in-project-p buf project)
+           collect buf))
 
 (defun projectur-buffer-in-project-p (buffer-or-name project)
   "Return non-nil if BUFFER-OR-NAME belongs to PROJECT."
@@ -405,7 +399,7 @@ If LIMIT-TO-MODE is true, ask for major mode and kill only those buffers with ch
   (projectur-with-current-project
     (if (fboundp 'ack)
         (call-interactively 'ack)
-        (error "You need `ack' command installed in order to use this functionality")))  )
+      (error "You need `ack' command installed in order to use this functionality"))))
 
 ;;;###autoload
 (defun projectur-generate-tags ()
@@ -479,7 +473,7 @@ Display error if current buffer is not visiting a file."
      (if project
          (file-relative-name buffer-file-name
                              (projectur-project-root project))
-         (abbreviate-file-name buffer-file-name)))))
+       (abbreviate-file-name buffer-file-name)))))
 
 ;;;###autoload
 (defun projectur-recompile (&optional edit-command)
@@ -530,9 +524,8 @@ Input compilation command if EDIT-COMMAND is not nil."
 
 (defun projectur-rake-project-p (dir)
   "Return non-nil if DIR is a root of project using rake, nil otherwise."
-  (cl-loop
-     for rakefile in '("rakefile" "Rakefile" "rakefile.rb" "Rakefile.rb")
-     thereis (file-regular-p (expand-file-name rakefile dir))))
+  (cl-loop for rakefile in '("rakefile" "Rakefile" "rakefile.rb" "Rakefile.rb")
+           thereis (file-regular-p (expand-file-name rakefile dir))))
 
 (defun projectur-bundler-project-p (dir)
   "Return non-nil if DIR is a root of project using bundler, nil otherwise."
