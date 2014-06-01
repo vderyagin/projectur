@@ -76,6 +76,9 @@ Executed in context of projects root directory."
     (:type "cabal project"
      :test projectur-cabal-project-p
      :ignored-dirs ("dist"))
+    (:type "Leiningen project"
+     :test projectur-lein-project-p
+     :ignored-dirs ("target"))
     (:type "Generic version-controlled project"
      :test projectur-version-controlled-repo-p))
   "A list with projects types descriptions."
@@ -573,6 +576,10 @@ Supported VCS: git, mercurial, subversion, bazaar, cvs, darcs."
     (file-regular-p (expand-file-name "Setup.hs" dir))
     (file-regular-p (expand-file-name "Setup.lhs" dir)))
    (file-expand-wildcards (expand-file-name "*.cabal" dir))))
+
+(defun projectur-lein-project-p (dir)
+  "Return non-nil if DIR is a root of Leiningen project, nil otherwise."
+  (file-regular-p (expand-file-name "project.clj" dir)))
 
 (provide 'projectur)
 
