@@ -419,7 +419,8 @@ If LIMIT-TO-MODE is true, ask for major mode and kill only those buffers with ch
   (mapc
    (lambda (buf)
      (with-current-buffer buf
-       (save-buffer)))
+       (when buffer-file-name
+         (save-buffer))))
    (projectur-buffers (projectur-current-project))))
 
 ;;;###autoload
