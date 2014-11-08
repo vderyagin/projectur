@@ -331,9 +331,11 @@ context for executing."
       (let ((files (projectur-project-files project))
             (root (projectur-project-root project)))
         (find-file
-         (projectur-complete
-          "Find file in project: " files
-          (lambda (file) (file-relative-name file root))))))))
+         (if (= 1 (length files))
+             (car files)
+           (projectur-complete
+            "Find file in project: " files
+            (lambda (file) (file-relative-name file root)))))))))
 
 ;;;###autoload
 (defun projectur-set-project-root (dir)
