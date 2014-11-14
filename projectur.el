@@ -82,7 +82,8 @@ Executed in context of projects root directory."
            :ignored-dirs ("target"))
     (:type "Cargo project"
            :test projectur-cargo-project-p
-           :ignored-dirs ("target"))
+           :ignored-dirs ("target")
+           :compile-command "cargo build")
     (:type "Generic version-controlled project"
            :test projectur-version-controlled-repo-p))
   "A list with projects types descriptions."
@@ -123,7 +124,8 @@ Executed in context of projects root directory."
      (unless (projectur-project-valid-p ,project)
        (projectur-history-cleanup)
        (error "Invalid project: %s" ,project))
-     (let ((default-directory (projectur-project-root ,project)))
+     (let ((default-directory (projectur-project-root ,project))
+           (compile-command (projectur--compile-command ,project)))
        ,@body)))
 
 (defmacro projectur-with-current-project (&rest body)
@@ -134,6 +136,12 @@ Executed in context of projects root directory."
        (error "Current buffer does not seem to belong to any project"))
      (projectur-with-project project
        ,@body)))
+
+(defun projectur--compile-command (project)
+  "Return value of `compile-command' appropriate for current PROJECT."
+  (or
+   (plist-get (cdr project) :compile-command)
+   compile-command))
 
 (defun projectur-history-cleanup ()
   "Delete invalid and duplicate projects from `projectur-history'."
