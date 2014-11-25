@@ -243,6 +243,26 @@ Return nil if unsuccessful."
             (name (projectur-project-name project)))
        (format "%-30s (%s)" name root)))))
 
+(defun projectur--find-projects-in-dir (dir)
+  "Find all projects within DIR."
+  (let ((project (projectur-project-containing-dir dir)))
+    (if project
+        (list project)
+        (cl-loop for subdir in (directory-files dir 'full-path (rx string-start (not (any "."))))
+                 unless (or (member (file-name-base subdir) projectur-ignored-dirs)
+                            (not (file-directory-p subdir)))
+                 append (projectur--find-projects-in-dir subdir) into projects
+                 finally return projects))))
+
+;;;###autoload
+(defun projectur-discover-projects (&rest dirs)
+  "Go through DIRS recursively and add all found projects to `projectur-history'."
+  (dolist (project (cl-loop for dir in dirs
+                            append (projectur--find-projects-in-dir dir) into projects
+                            finally return projects))
+    (add-to-list 'projectur-history project))
+  (projectur-history-cleanup))
+
 (defun projectur-project-root (project)
   "Return root directory of PROJECT."
   (car project))
