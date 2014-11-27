@@ -255,13 +255,29 @@ Return nil if unsuccessful."
                  finally return projects))))
 
 ;;;###autoload
-(defun projectur-discover-projects (&rest dirs)
-  "Go through DIRS recursively and add all found projects to `projectur-history'."
-  (dolist (project (cl-loop for dir in dirs
-                            append (projectur--find-projects-in-dir dir) into projects
-                            finally return projects))
-    (add-to-list 'projectur-history project))
-  (projectur-history-cleanup))
+(defun projectur-discover-projects (dir)
+  "Go through DIR recursively and add all found projects to `projectur-history'.
+When called interactively report total number of projects
+discovered and how many of them are new (not already present in
+`projectur-history')."
+  (interactive "DDirectory to find projects in: ")
+  (let ((projects (projectur--find-projects-in-dir dir))
+        history-size-before)
+
+    (projectur-history-cleanup)
+    (setq history-size-before (length projectur-history))
+
+    (mapc
+     (lambda (project)
+       (add-to-list 'projectur-history project))
+     projects)
+
+    (projectur-history-cleanup)
+
+    (when (called-interactively-p)
+      (message "Found %d projects (%d new)"
+               (length projects)
+               (- (length projectur-history) history-size-before)))))
 
 (defun projectur-project-root (project)
   "Return root directory of PROJECT."
